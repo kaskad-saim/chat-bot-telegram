@@ -1,2 +1,2 @@
 # chat-bot-telegram
-chat-bot-telegram descr
+chat-bot-telegram on techsite
