@@ -25,16 +25,16 @@ export const handleCallbackQuery = async (bot, app, query) => {
 
   const buttons = {
     furnace_1: [
+      [{ text: 'Текущие параметры', callback_data: 'get_temperature_1' }],
       [
-        { text: 'Текущие параметры', callback_data: 'get_temperature_1' },
         { text: 'Графики', callback_data: 'charts_1' },
         { text: 'Алармы', callback_data: 'check_alarms_1' },
       ],
       [{ text: 'Назад', callback_data: 'production_carbon' }],
     ],
     furnace_2: [
+      [{ text: 'Текущие параметры', callback_data: 'get_temperature_2' }],
       [
-        { text: 'Текущие параметры', callback_data: 'get_temperature_2' },
         { text: 'Графики', callback_data: 'charts_2' },
         { text: 'Алармы', callback_data: 'check_alarms_2' },
       ],
@@ -85,30 +85,42 @@ export const handleCallbackQuery = async (bot, app, query) => {
     checkAndNotify(data, bot, chatId, furnaceNumber, query.message.message_id);
   } else if (action === 'chart_temperature_1') {
     try {
-      const chartBuffer = await generateTemperatureChartVR1(); // Генерируем график для ВР1
+      const chartBuffer = await generateTemperatureChartVR1(); // Генерация графика для ВР1
       if (!chartBuffer || chartBuffer.length === 0) {
         throw new Error('График для ВР1 не был создан.');
       }
       await bot.sendPhoto(chatId, chartBuffer, {
         caption: `График температуры для печи ВР1 за последний час`,
         reply_markup: {
-          inline_keyboard: buttons['charts_1'],
+          inline_keyboard: [
+            [
+              { text: 'Обновить', callback_data: 'chart_temperature_1' },
+              { text: 'Назад', callback_data: 'charts_1' },
+            ],
+          ],
         },
       });
     } catch (error) {
       console.error('Ошибка при генерации или отправке графика ВР1:', error);
       await bot.sendMessage(chatId, 'Произошла ошибка при создании графика. Пожалуйста, попробуйте позже.');
     }
-  } else if (action === 'chart_temperature_2') {
+  }
+  // Повторяем аналогичный код для других графиков:
+  else if (action === 'chart_temperature_2') {
     try {
-      const chartBuffer = await generateTemperatureChartVR2(); // Генерируем график для ВР2
+      const chartBuffer = await generateTemperatureChartVR2();
       if (!chartBuffer || chartBuffer.length === 0) {
         throw new Error('График для ВР2 не был создан.');
       }
       await bot.sendPhoto(chatId, chartBuffer, {
         caption: `График температуры для печи ВР2 за последний час`,
         reply_markup: {
-          inline_keyboard: buttons['charts_2'],
+          inline_keyboard: [
+            [
+              { text: 'Обновить', callback_data: 'chart_temperature_2' },
+              { text: 'Назад', callback_data: 'charts_2' },
+            ],
+          ],
         },
       });
     } catch (error) {
@@ -117,14 +129,19 @@ export const handleCallbackQuery = async (bot, app, query) => {
     }
   } else if (action === 'chart_pressure_1') {
     try {
-      const chartBuffer = await generatePressureChartVR1(); // Генерируем график давления/разрежения для ВР1
+      const chartBuffer = await generatePressureChartVR1();
       if (!chartBuffer || chartBuffer.length === 0) {
         throw new Error('График давления/разрежения для ВР1 не был создан.');
       }
       await bot.sendPhoto(chatId, chartBuffer, {
         caption: `График давления/разрежения для печи ВР1 за последний час`,
         reply_markup: {
-          inline_keyboard: buttons['charts_1'],
+          inline_keyboard: [
+            [
+              { text: 'Обновить', callback_data: 'chart_pressure_1' },
+              { text: 'Назад', callback_data: 'charts_1' },
+            ],
+          ],
         },
       });
     } catch (error) {
@@ -133,14 +150,19 @@ export const handleCallbackQuery = async (bot, app, query) => {
     }
   } else if (action === 'chart_pressure_2') {
     try {
-      const chartBuffer = await generatePressureChartVR2(); // Генерируем график давления/разрежения для ВР2
+      const chartBuffer = await generatePressureChartVR2();
       if (!chartBuffer || chartBuffer.length === 0) {
         throw new Error('График давления/разрежения для ВР2 не был создан.');
       }
       await bot.sendPhoto(chatId, chartBuffer, {
         caption: `График давления/разрежения для печи ВР2 за последний час`,
         reply_markup: {
-          inline_keyboard: buttons['charts_2'],
+          inline_keyboard: [
+            [
+              { text: 'Обновить', callback_data: 'chart_pressure_2' },
+              { text: 'Назад', callback_data: 'charts_2' },
+            ],
+          ],
         },
       });
     } catch (error) {
@@ -149,14 +171,19 @@ export const handleCallbackQuery = async (bot, app, query) => {
     }
   } else if (action === 'chart_level_1') {
     try {
-      const chartBuffer = await generateWaterLevelChartVR1(); // Генерация графика уровня воды для ВР1
+      const chartBuffer = await generateWaterLevelChartVR1();
       if (!chartBuffer || chartBuffer.length === 0) {
         throw new Error('График уровня воды для ВР1 не был создан.');
       }
       await bot.sendPhoto(chatId, chartBuffer, {
         caption: `График уровня воды для печи ВР1 за последний час`,
         reply_markup: {
-          inline_keyboard: buttons['charts_1'],
+          inline_keyboard: [
+            [
+              { text: 'Обновить', callback_data: 'chart_level_1' },
+              { text: 'Назад', callback_data: 'charts_1' },
+            ],
+          ],
         },
       });
     } catch (error) {
@@ -165,14 +192,19 @@ export const handleCallbackQuery = async (bot, app, query) => {
     }
   } else if (action === 'chart_level_2') {
     try {
-      const chartBuffer = await generateWaterLevelChartVR2(); // Генерация графика уровня воды для ВР2
+      const chartBuffer = await generateWaterLevelChartVR2();
       if (!chartBuffer || chartBuffer.length === 0) {
         throw new Error('График уровня воды для ВР2 не был создан.');
       }
       await bot.sendPhoto(chatId, chartBuffer, {
         caption: `График уровня воды для печи ВР2 за последний час`,
         reply_markup: {
-          inline_keyboard: buttons['charts_2'],
+          inline_keyboard: [
+            [
+              { text: 'Обновить', callback_data: 'chart_level_2' },
+              { text: 'Назад', callback_data: 'charts_2' },
+            ],
+          ],
         },
       });
     } catch (error) {
