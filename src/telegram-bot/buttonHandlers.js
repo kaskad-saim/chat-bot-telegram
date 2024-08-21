@@ -116,23 +116,31 @@ export const handleCallbackQuery = async (bot, app, query) => {
   const currentTime = new Date().toLocaleString();
   const data = app.locals.data;
 
-  if (action.startsWith('get_temperature_')) {
-    const furnaceNumber = action.includes('1') ? 1 : 2;
-    const table = generateTablePechVr(data, furnaceNumber, currentTime);
-    editMessageWithButtons(bot, chatId, query.message.message_id, table, [
-      [
-        { text: 'Алармы', callback_data: `check_alarms_${furnaceNumber}` },
-        { text: 'Обновить', callback_data: action },
-      ],
-      [{ text: 'Назад', callback_data: `furnace_${furnaceNumber}` }],
-    ]);
-  } else if (action.startsWith('check_alarms_')) {
-    const furnaceNumber = action.includes('1') ? 1 : 2;
-    checkAndNotify(data, bot, chatId, furnaceNumber, query.message.message_id);
-  } else if (chartGenerators[action]) {
-    await handleChartGeneration(bot, chatId, action, query.message.message_id);
-  } else {
-    const buttonSet = getButtonsByAction(action);
-    sendMessageWithButtons(bot, chatId, 'Выберите интересующую опцию:', buttonSet);
+  try {
+    if (action.startsWith('get_temperature_')) {
+      const furnaceNumber = action.includes('1') ? 1 : 2;
+      const table = generateTablePechVr(data, furnaceNumber, currentTime);
+      await editMessageWithButtons(bot, chatId, query.message.message_id, table, [
+        [
+          { text: 'Алармы', callback_data: `check_alarms_${furnaceNumber}` },
+          { text: 'Обновить', callback_data: action },
+        ],
+        [{ text: 'Назад', callback_data: `furnace_${furnaceNumber}` }],
+      ]);
+    } else if (action.startsWith('check_alarms_')) {
+      const furnaceNumber = action.includes('1') ? 1 : 2;
+      await checkAndNotify(data, bot, chatId, furnaceNumber, query.message.message_id);
+    } else if (chartGenerators[action]) {
+      await handleChartGeneration(bot, chatId, action, query.message.message_id);
+    } else {
+      const buttonSet = getButtonsByAction(action);
+      await sendMessageWithButtons(bot, chatId, 'Выберите интересующую опцию:', buttonSet);
+    }
+  } catch (error) {
+    console.error(`Ошибка при обработке callback_query для ${action}:`, error);
+    await bot.sendMessage(chatId, 'Произошла ошибка при обработке запроса. Пожалуйста, попробуйте позже.');
+  } finally {
+    // Подтверждение обработки callback-запроса
+    await bot.answerCallbackQuery(query.id);
   }
 };
