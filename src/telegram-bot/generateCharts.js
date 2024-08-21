@@ -3,7 +3,7 @@ import { FurnaceVR1, FurnaceVR2 } from '../models/FurnanceModel.js';
 
 const generateChart = async (FurnaceModel, keys, labels, yAxisTitle, chartTitle, yMin, yMax) => {
   const currentTime = new Date();
-  const oneHourAgo = new Date(currentTime.getTime() - 1 * 60 * 60 * 1000);
+  const oneHourAgo = new Date(currentTime.getTime() - 12 * 60 * 60 * 1000);
 
   const datasetsPromises = keys.map((key) => {
     return FurnaceModel.find({ key, timestamp: { $gte: oneHourAgo.toLocaleString('ru-RU') } }).sort({ timestamp: 1 });
@@ -60,7 +60,7 @@ const generateChart = async (FurnaceModel, keys, labels, yAxisTitle, chartTitle,
           title: { display: true, text: 'Время' },
           ticks: {
             autoSkip: true,
-            maxTicksLimit: 10,
+            maxTicksLimit: 12,
           },
         },
         y: {

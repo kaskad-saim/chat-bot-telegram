@@ -11,18 +11,22 @@ import {
   generateWaterLevelChartVR2,
 } from './generateCharts.js';
 
+const chartGenerators = {
+  chart_temperature_1: generateTemperatureChartVR1,
+  chart_temperature_2: generateTemperatureChartVR2,
+  chart_pressure_1: generatePressureChartVR1,
+  chart_pressure_2: generatePressureChartVR2,
+  chart_level_1: generateWaterLevelChartVR1,
+  chart_level_2: generateWaterLevelChartVR2,
+};
+
 export const handleMessage = (bot, chatId) => {
   sendMessageWithButtons(bot, chatId, 'Выберите интересующую опцию:', [
     [{ text: 'Производство Карбон', callback_data: 'production_carbon' }],
   ]);
 };
 
-export const handleCallbackQuery = async (bot, app, query) => {
-  const chatId = query.message.chat.id;
-  const action = query.data;
-  const currentTime = new Date().toLocaleString();
-  const data = app.locals.data;
-
+const getButtonsByAction = (action) => {
   const buttons = {
     furnace_1: [
       [{ text: 'Текущие параметры', callback_data: 'get_temperature_1' }],
@@ -70,8 +74,50 @@ export const handleCallbackQuery = async (bot, app, query) => {
     back_to_production: [[{ text: 'Производство Карбон', callback_data: 'production_carbon' }]],
   };
 
-  if (action === 'get_temperature_1' || action === 'get_temperature_2') {
-    const furnaceNumber = action === 'get_temperature_1' ? 1 : 2;
+  return buttons[action] || buttons.back_to_production;
+};
+
+const handleChartGeneration = async (bot, chatId, action, messageId) => {
+  const generateChart = chartGenerators[action];
+  if (!generateChart) return;
+
+  try {
+    const chartBuffer = await generateChart();
+    if (!chartBuffer || chartBuffer.length === 0) {
+      throw new Error(`График не был создан для ${action}`);
+    }
+    const furnaceNumber = action.includes('1') ? 1 : 2;
+    const chartType = action.includes('temperature')
+      ? 'Температура'
+      : action.includes('pressure')
+      ? 'Давление/разрежение'
+      : 'Уровень';
+
+    await bot.sendPhoto(chatId, chartBuffer, {
+      caption: `График ${chartType} для печи ВР${furnaceNumber} за последний час`,
+      reply_markup: {
+        inline_keyboard: [
+          [
+            { text: 'Обновить', callback_data: action },
+            { text: 'Назад', callback_data: `charts_${furnaceNumber}` },
+          ],
+        ],
+      },
+    });
+  } catch (error) {
+    console.error(`Ошибка при генерации или отправке графика ${action}:`, error);
+    await bot.sendMessage(chatId, 'Произошла ошибка при создании графика. Пожалуйста, попробуйте позже.');
+  }
+};
+
+export const handleCallbackQuery = async (bot, app, query) => {
+  const chatId = query.message.chat.id;
+  const action = query.data;
+  const currentTime = new Date().toLocaleString();
+  const data = app.locals.data;
+
+  if (action.startsWith('get_temperature_')) {
+    const furnaceNumber = action.includes('1') ? 1 : 2;
     const table = generateTablePechVr(data, furnaceNumber, currentTime);
     editMessageWithButtons(bot, chatId, query.message.message_id, table, [
       [
@@ -81,138 +127,12 @@ export const handleCallbackQuery = async (bot, app, query) => {
       [{ text: 'Назад', callback_data: `furnace_${furnaceNumber}` }],
     ]);
   } else if (action.startsWith('check_alarms_')) {
-    const furnaceNumber = action === 'check_alarms_1' ? 1 : 2;
+    const furnaceNumber = action.includes('1') ? 1 : 2;
     checkAndNotify(data, bot, chatId, furnaceNumber, query.message.message_id);
-  } else if (action === 'chart_temperature_1') {
-    try {
-      const chartBuffer = await generateTemperatureChartVR1(); // Генерация графика для ВР1
-      if (!chartBuffer || chartBuffer.length === 0) {
-        throw new Error('График для ВР1 не был создан.');
-      }
-      await bot.sendPhoto(chatId, chartBuffer, {
-        caption: `График температуры для печи ВР1 за последний час`,
-        reply_markup: {
-          inline_keyboard: [
-            [
-              { text: 'Обновить', callback_data: 'chart_temperature_1' },
-              { text: 'Назад', callback_data: 'charts_1' },
-            ],
-          ],
-        },
-      });
-    } catch (error) {
-      console.error('Ошибка при генерации или отправке графика ВР1:', error);
-      await bot.sendMessage(chatId, 'Произошла ошибка при создании графика. Пожалуйста, попробуйте позже.');
-    }
-  }
-  // Повторяем аналогичный код для других графиков:
-  else if (action === 'chart_temperature_2') {
-    try {
-      const chartBuffer = await generateTemperatureChartVR2();
-      if (!chartBuffer || chartBuffer.length === 0) {
-        throw new Error('График для ВР2 не был создан.');
-      }
-      await bot.sendPhoto(chatId, chartBuffer, {
-        caption: `График температуры для печи ВР2 за последний час`,
-        reply_markup: {
-          inline_keyboard: [
-            [
-              { text: 'Обновить', callback_data: 'chart_temperature_2' },
-              { text: 'Назад', callback_data: 'charts_2' },
-            ],
-          ],
-        },
-      });
-    } catch (error) {
-      console.error('Ошибка при генерации или отправке графика ВР2:', error);
-      await bot.sendMessage(chatId, 'Произошла ошибка при создании графика. Пожалуйста, попробуйте позже.');
-    }
-  } else if (action === 'chart_pressure_1') {
-    try {
-      const chartBuffer = await generatePressureChartVR1();
-      if (!chartBuffer || chartBuffer.length === 0) {
-        throw new Error('График давления/разрежения для ВР1 не был создан.');
-      }
-      await bot.sendPhoto(chatId, chartBuffer, {
-        caption: `График давления/разрежения для печи ВР1 за последний час`,
-        reply_markup: {
-          inline_keyboard: [
-            [
-              { text: 'Обновить', callback_data: 'chart_pressure_1' },
-              { text: 'Назад', callback_data: 'charts_1' },
-            ],
-          ],
-        },
-      });
-    } catch (error) {
-      console.error('Ошибка при генерации или отправке графика ВР1:', error);
-      await bot.sendMessage(chatId, 'Произошла ошибка при создании графика. Пожалуйста, попробуйте позже.');
-    }
-  } else if (action === 'chart_pressure_2') {
-    try {
-      const chartBuffer = await generatePressureChartVR2();
-      if (!chartBuffer || chartBuffer.length === 0) {
-        throw new Error('График давления/разрежения для ВР2 не был создан.');
-      }
-      await bot.sendPhoto(chatId, chartBuffer, {
-        caption: `График давления/разрежения для печи ВР2 за последний час`,
-        reply_markup: {
-          inline_keyboard: [
-            [
-              { text: 'Обновить', callback_data: 'chart_pressure_2' },
-              { text: 'Назад', callback_data: 'charts_2' },
-            ],
-          ],
-        },
-      });
-    } catch (error) {
-      console.error('Ошибка при генерации или отправке графика ВР2:', error);
-      await bot.sendMessage(chatId, 'Произошла ошибка при создании графика. Пожалуйста, попробуйте позже.');
-    }
-  } else if (action === 'chart_level_1') {
-    try {
-      const chartBuffer = await generateWaterLevelChartVR1();
-      if (!chartBuffer || chartBuffer.length === 0) {
-        throw new Error('График уровня воды для ВР1 не был создан.');
-      }
-      await bot.sendPhoto(chatId, chartBuffer, {
-        caption: `График уровня воды для печи ВР1 за последний час`,
-        reply_markup: {
-          inline_keyboard: [
-            [
-              { text: 'Обновить', callback_data: 'chart_level_1' },
-              { text: 'Назад', callback_data: 'charts_1' },
-            ],
-          ],
-        },
-      });
-    } catch (error) {
-      console.error('Ошибка при генерации или отправке графика уровня воды ВР1:', error);
-      await bot.sendMessage(chatId, 'Произошла ошибка при создании графика. Пожалуйста, попробуйте позже.');
-    }
-  } else if (action === 'chart_level_2') {
-    try {
-      const chartBuffer = await generateWaterLevelChartVR2();
-      if (!chartBuffer || chartBuffer.length === 0) {
-        throw new Error('График уровня воды для ВР2 не был создан.');
-      }
-      await bot.sendPhoto(chatId, chartBuffer, {
-        caption: `График уровня воды для печи ВР2 за последний час`,
-        reply_markup: {
-          inline_keyboard: [
-            [
-              { text: 'Обновить', callback_data: 'chart_level_2' },
-              { text: 'Назад', callback_data: 'charts_2' },
-            ],
-          ],
-        },
-      });
-    } catch (error) {
-      console.error('Ошибка при генерации или отправке графика уровня воды ВР2:', error);
-      await bot.sendMessage(chatId, 'Произошла ошибка при создании графика. Пожалуйста, попробуйте позже.');
-    }
+  } else if (chartGenerators[action]) {
+    await handleChartGeneration(bot, chatId, action, query.message.message_id);
   } else {
-    const buttonSet = buttons[action] || buttons.back_to_production;
+    const buttonSet = getButtonsByAction(action);
     sendMessageWithButtons(bot, chatId, 'Выберите интересующую опцию:', buttonSet);
   }
 };
