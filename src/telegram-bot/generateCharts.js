@@ -15,8 +15,6 @@ const generateChart = async (FurnaceModel, keys, labels, yAxisTitle, chartTitle,
     if (dataset.length === 0) {
       console.error(`No data found for ${keys[index]}`);
       throw new Error(`Нет данных для ${keys[index]} за последний час для ${chartTitle}.`);
-    } else {
-      // console.log(`Data for ${keys[index]}:`, dataset); // Логируем данные, которые были извлечены из базы данных
     }
   });
 
@@ -50,8 +48,10 @@ const generateChart = async (FurnaceModel, keys, labels, yAxisTitle, chartTitle,
         label: labels[index],
         data,
         fill: false,
-        borderColor: colors[index % colors.length], // разные цвета для каждого графика
+        borderColor: colors[index % colors.length],
+        borderWidth: 1.5,
         tension: 0.1,
+        pointRadius: 0,
       })),
     },
     options: {
@@ -82,6 +82,7 @@ const generateChart = async (FurnaceModel, keys, labels, yAxisTitle, chartTitle,
 
   return buffer;
 };
+
 // Температура: от 0 до 1500
 export const generateTemperatureChartVR1 = async () => {
   return generateChart(
