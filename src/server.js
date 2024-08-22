@@ -2,37 +2,78 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import mongoose from 'mongoose';
-import { config } from './config/config.js'; // Конфигурация приложения
-import { updateValuesRoute } from './routes/updateValues.js'; // Маршрут для обновления значений
-import createTelegramBot from './telegram-bot/telegramBot.js'; // Функция создания Telegram бота
+import { config } from './config/config.js';
+import { updateValuesRoute } from './routes/updateValues.js';
+import createTelegramBot from './telegram-bot/telegramBot.js';
+import fs from 'fs';
 
 const app = express();
 const PORT = config.PORT;
 
-// Определение __dirname и __filename
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Подключение к MongoDB
+const logsDir = path.join(__dirname, 'logs');
+
+// Проверяем и создаем папку logs
+if (!fs.existsSync(logsDir)) {
+    fs.mkdirSync(logsDir);
+}
+
+function logErrorWithTime(error) {
+    const currentTime = new Date().toLocaleString();
+    const errorMessage = `[${currentTime}] ${error.stack || error.message}\n`;
+
+    console.error(errorMessage); // Выводим ошибку в консоль с временем
+
+    fs.appendFile(path.join(logsDir, 'errors.log'), errorMessage, (err) => {
+        if (err) {
+            console.error(`Не удалось записать ошибку в файл: ${err.message}`);
+        } else {
+            console.log('Ошибка успешно записана в файл');
+        }
+    });
+}
+
+// Подключение к MongoDB с обработкой ошибок
 mongoose.connect('mongodb://localhost:27017/furnaceData')
   .then(() => {
     console.log('Connected to MongoDB');
   })
   .catch((err) => {
-    console.error('Error connecting to MongoDB', err);
+    logErrorWithTime(err);
   });
 
-// Настройка статического сервера для файлов в public
 app.use(express.static(path.join(__dirname, '../public/')));
 app.use(express.json());
 
-// Создание и настройка Telegram бота
-const bot = createTelegramBot(app); // Создаем бота и передаем Express приложение
+// Создаем и инициализируем бота
+const bot = createTelegramBot(app);
 
-// Подключаем маршруты
+// Обработка polling_error
+bot.on('polling_error', (error) => {
+    logErrorWithTime(error);
+});
+
+// Обработка всех необработанных ошибок
+process.on('uncaughtException', (err) => {
+    logErrorWithTime(err);
+});
+
+// Обработка ошибок промисов, которые не были обработаны
+process.on('unhandledRejection', (reason, promise) => {
+    logErrorWithTime(reason);
+});
+
+// Регистрация маршрутов после инициализации бота
 updateValuesRoute(app);
 
-// Запуск сервера
+// Обработка ошибок маршрутов и других middleware
+app.use((err, req, res, next) => {
+    logErrorWithTime(err);
+    res.status(500).json({ message: 'Internal Server Error' });
+});
+
 app.listen(PORT, () => {
   const timeStamp = new Date().toLocaleString();
   console.log(`[${timeStamp}] Server is running on http://169.254.0.167:${PORT}`);
