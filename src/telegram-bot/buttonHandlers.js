@@ -95,13 +95,13 @@ const handleChartGeneration = async (bot, chatId, action, messageId) => {
     }
     const furnaceNumber = action.includes('1') ? 1 : 2;
     const chartType = action.includes('temperature')
-      ? 'Температура'
+      ? 'температуры'
       : action.includes('pressure')
-      ? 'Давление/разрежение'
-      : 'Уровень';
+      ? 'давления/разрежения'
+      : 'уровня';
 
     await bot.sendPhoto(chatId, chartBuffer, {
-      caption: `График ${chartType} для печи ВР${furnaceNumber} за 24 часа`,
+      caption: `График ${chartType} для печи карбонизации №${furnaceNumber} за 24 часа`,
     });
 
     // После отправки графика вернем пользователю меню с выбором графика
