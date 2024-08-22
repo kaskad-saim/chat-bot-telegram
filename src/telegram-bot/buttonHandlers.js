@@ -113,29 +113,45 @@ const handleChartGeneration = async (bot, chatId, action, messageId) => {
 export const handleCallbackQuery = async (bot, app, query) => {
   const chatId = query.message.chat.id;
   const action = query.data;
-  const currentTime = new Date().toLocaleString();
-  const data = app.locals.data;
 
-  // Ответ на callback_query, чтобы остановить моргание кнопки
+  // Ответ на callback_query, чтобы остановить моргание кнопки и избежать ошибки "query is too old"
   await bot.answerCallbackQuery(query.id);
 
-  if (action.startsWith('get_temperature_')) {
-    const furnaceNumber = action.includes('1') ? 1 : 2;
-    const table = generateTablePechVr(data, furnaceNumber, currentTime);
-    editMessageWithButtons(bot, chatId, query.message.message_id, table, [
-      [
-        { text: 'Алармы', callback_data: `check_alarms_${furnaceNumber}` },
-        { text: 'Обновить', callback_data: action },
-      ],
-      [{ text: 'Назад', callback_data: `furnace_${furnaceNumber}` }],
-    ]);
-  } else if (action.startsWith('check_alarms_')) {
-    const furnaceNumber = action.includes('1') ? 1 : 2;
-    checkAndNotify(data, bot, chatId, furnaceNumber, query.message.message_id);
-  } else if (chartGenerators[action]) {
-    await handleChartGeneration(bot, chatId, action, query.message.message_id);
-  } else {
-    const buttonSet = getButtonsByAction(action);
-    sendMessageWithButtons(bot, chatId, 'Выберите интересующую опцию:', buttonSet);
+  try {
+    // Логика обработки текущих параметров
+    if (action.startsWith('get_temperature_')) {
+      const furnaceNumber = action.includes('1') ? 1 : 2;
+      const currentTime = new Date().toLocaleString();
+      const data = app.locals.data;
+
+      const table = generateTablePechVr(data, furnaceNumber, currentTime);
+
+      await editMessageWithButtons(bot, chatId, query.message.message_id, table, [
+        [
+          { text: 'Алармы', callback_data: `check_alarms_${furnaceNumber}` },
+          { text: 'Обновить', callback_data: action },
+        ],
+        [{ text: 'Назад', callback_data: `furnace_${furnaceNumber}` }],
+      ]);
+
+      // Логика обработки алармов
+    } else if (action.startsWith('check_alarms_')) {
+      const furnaceNumber = action.includes('1') ? 1 : 2;
+      const data = app.locals.data;
+
+      await checkAndNotify(data, bot, chatId, furnaceNumber, query.message.message_id);
+
+      // Логика обработки графиков
+    } else if (chartGenerators[action]) {
+      await handleChartGeneration(bot, chatId, action, query.message.message_id);
+
+      // Логика обработки других действий (например, возвращение к кнопкам)
+    } else {
+      const buttonSet = getButtonsByAction(action);
+      await sendMessageWithButtons(bot, chatId, 'Выберите интересующую опцию:', buttonSet);
+    }
+  } catch (error) {
+    console.error(`Ошибка обработки действия ${action}:`, error);
+    await bot.sendMessage(chatId, 'Произошла ошибка при выполнении вашего запроса. Пожалуйста, попробуйте позже.');
   }
 };
