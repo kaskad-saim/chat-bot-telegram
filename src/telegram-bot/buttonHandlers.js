@@ -132,9 +132,7 @@ export const handleHelp = async (bot, chatId, messageId) => {
     Для получения дополнительной помощи, пожалуйста, обратитесь к администратору системы.
   `;
 
-  const buttonSet = [
-    [{ text: 'Назад', callback_data: 'back_to_main' }],
-  ];
+  const buttonSet = [[{ text: 'Назад', callback_data: 'back_to_main' }]];
 
   await bot.sendMessage(chatId, helpMessage, {
     parse_mode: 'Markdown',
@@ -152,7 +150,6 @@ export const handleCallbackQuery = async (bot, app, query) => {
   await bot.answerCallbackQuery(query.id);
 
   try {
-    // Логика обработки текущих параметров
     if (action.startsWith('get_temperature_')) {
       const furnaceNumber = action.includes('1') ? 1 : 2;
       const currentTime = new Date().toLocaleString();
@@ -160,13 +157,19 @@ export const handleCallbackQuery = async (bot, app, query) => {
 
       const table = generateTablePechVr(data, furnaceNumber, currentTime);
 
-      await editMessageWithButtons(bot, chatId, query.message.message_id, table, [
-        [
-          { text: 'Алармы', callback_data: `check_alarms_${furnaceNumber}` },
-          { text: 'Обновить', callback_data: action },
-        ],
-        [{ text: 'Назад', callback_data: `furnace_${furnaceNumber}` }],
-      ]);
+      await bot.editMessageText(table, {
+        chat_id: chatId,
+        message_id: query.message.message_id,
+        reply_markup: {
+          inline_keyboard: [
+            [
+              { text: 'Алармы', callback_data: `check_alarms_${furnaceNumber}` },
+              { text: 'Обновить', callback_data: action },
+            ],
+            [{ text: 'Назад', callback_data: `furnace_${furnaceNumber}` }],
+          ],
+        },
+      });
     } else if (action.startsWith('check_alarms_')) {
       const furnaceNumber = action.includes('1') ? 1 : 2;
       const data = app.locals.data;
@@ -177,18 +180,35 @@ export const handleCallbackQuery = async (bot, app, query) => {
     } else if (action === 'furnace_1' || action === 'furnace_2') {
       const buttonSet = getButtonsByAction(action);
       const furnaceNumber = action === 'furnace_1' ? 1 : 2;
-      await sendMessageWithButtons(bot, chatId, `Выберите опции для Печи карбонизации ${furnaceNumber}:`, buttonSet);
+      await bot.editMessageText(`Выберите опции для Печи карбонизации ${furnaceNumber}:`, {
+        chat_id: chatId,
+        message_id: query.message.message_id,
+        reply_markup: {
+          inline_keyboard: buttonSet,
+        },
+      });
     } else if (action === 'help') {
       await handleHelp(bot, chatId, query.message.message_id);
     } else if (action === 'back_to_main') {
-      await sendMessageWithButtons(bot, chatId, 'Выберите интересующую опцию:', getButtonsByAction('back_to_main'));
+      await bot.editMessageText('Выберите интересующую опцию:', {
+        chat_id: chatId,
+        message_id: query.message.message_id,
+        reply_markup: {
+          inline_keyboard: getButtonsByAction('back_to_main'),
+        },
+      });
     } else {
       const buttonSet = getButtonsByAction(action);
-      await editMessageWithButtons(bot, chatId, query.message.message_id, 'Выберите интересующую опцию:', buttonSet);
+      await bot.editMessageText('Выберите интересующую опцию:', {
+        chat_id: chatId,
+        message_id: query.message.message_id,
+        reply_markup: {
+          inline_keyboard: buttonSet,
+        },
+      });
     }
   } catch (error) {
     console.error(`Ошибка обработки действия ${action}:`, error);
     await bot.sendMessage(chatId, 'Произошла ошибка при выполнении вашего запроса. Пожалуйста, попробуйте позже.');
   }
 };
-
