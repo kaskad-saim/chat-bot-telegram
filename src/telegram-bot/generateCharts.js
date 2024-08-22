@@ -76,6 +76,7 @@ const generateChart = async (FurnaceModel, keys, labels, yAxisTitle, chartTitle,
   };
 
   const buffer = await chartJSNodeCanvas.renderToBuffer(config);
+  
   if (!buffer || buffer.length === 0) {
     throw new Error(`Не удалось создать график для ${chartTitle}`);
   }
