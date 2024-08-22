@@ -29,18 +29,16 @@ export const handleMessage = (bot, chatId) => {
 const getButtonsByAction = (action) => {
   const buttons = {
     furnace_1: [
-      [{ text: 'Текущие параметры', callback_data: 'get_temperature_1' }],
       [
+        { text: 'Текущие параметры', callback_data: 'get_temperature_1' },
         { text: 'Графики', callback_data: 'charts_1' },
-        { text: 'Алармы', callback_data: 'check_alarms_1' },
       ],
       [{ text: 'Назад', callback_data: 'production_carbon' }],
     ],
     furnace_2: [
-      [{ text: 'Текущие параметры', callback_data: 'get_temperature_2' }],
       [
+        { text: 'Текущие параметры', callback_data: 'get_temperature_2' },
         { text: 'Графики', callback_data: 'charts_2' },
-        { text: 'Алармы', callback_data: 'check_alarms_2' },
       ],
       [{ text: 'Назад', callback_data: 'production_carbon' }],
     ],
@@ -95,15 +93,12 @@ const handleChartGeneration = async (bot, chatId, action, messageId) => {
 
     await bot.sendPhoto(chatId, chartBuffer, {
       caption: `График ${chartType} для печи ВР${furnaceNumber} за последний час`,
-      reply_markup: {
-        inline_keyboard: [
-          [
-            { text: 'Обновить', callback_data: action },
-            { text: 'Назад', callback_data: `charts_${furnaceNumber}` },
-          ],
-        ],
-      },
     });
+
+    // После отправки графика вернем пользователю меню с выбором графика
+    const buttonSet = getButtonsByAction(`charts_${furnaceNumber}`);
+    await sendMessageWithButtons(bot, chatId, 'Выберите следующий график или вернитесь назад:', buttonSet);
+
   } catch (error) {
     console.error(`Ошибка при генерации или отправке графика ${action}:`, error);
     await bot.sendMessage(chatId, 'Произошла ошибка при создании графика. Пожалуйста, попробуйте позже.');
@@ -145,10 +140,16 @@ export const handleCallbackQuery = async (bot, app, query) => {
     } else if (chartGenerators[action]) {
       await handleChartGeneration(bot, chatId, action, query.message.message_id);
 
+      // Логика обработки выбора печей
+    } else if (action === 'furnace_1' || action === 'furnace_2') {
+      const buttonSet = getButtonsByAction(action);
+      const furnaceNumber = action === 'furnace_1' ? 1 : 2;
+      await sendMessageWithButtons(bot, chatId, `Выберите опции для Печи карбонизации ${furnaceNumber}:`, buttonSet);
+
       // Логика обработки других действий (например, возвращение к кнопкам)
     } else {
       const buttonSet = getButtonsByAction(action);
-      await sendMessageWithButtons(bot, chatId, 'Выберите интересующую опцию:', buttonSet);
+      await editMessageWithButtons(bot, chatId, query.message.message_id, 'Выберите интересующую опцию:', buttonSet);
     }
   } catch (error) {
     console.error(`Ошибка обработки действия ${action}:`, error);
