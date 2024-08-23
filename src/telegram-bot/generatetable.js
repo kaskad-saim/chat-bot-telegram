@@ -10,6 +10,10 @@ export const generateTablePechVr = (data, furnaceNumber, currentTime) => {
       return '❓ '; // Если печь не работает, возвращаем знак вопроса
     }
 
+    if (min === undefined && max === undefined) {
+      return '✅ ';
+    }
+
     const transformedValue = parseFloat(value.replace(',', '.'));
     return transformedValue >= min && transformedValue <= max ? '✅ ' : '❌ ';
   };
@@ -22,6 +26,10 @@ export const generateTablePechVr = (data, furnaceNumber, currentTime) => {
   const formatPressure = (label, key, min, max) => `${checkRange(data[key], min, max)} ${label}: ${data[key]} кгс/см2`;
 
   const formatVacuum = (label, key, min, max) => `${checkRange(data[key], min, max)} ${label}: ${data[key]} кгс/м2`;
+
+  const formatIm = (label, key) => `${checkRange(data[key])} ${label}: ${data[key]} %`;
+
+  const formatGorelka = (label, key) => `${checkRange(data[key])} ${label}: ${data[key]} %`;
 
   // Параметры температур
   const temperatures = [
@@ -66,6 +74,12 @@ export const generateTablePechVr = (data, furnaceNumber, currentTime) => {
     formatVacuum('Низ загрузочной камеры', `Разрежение низ загрузочной камеры печь ВР${furnaceNumber}`, -5, -1),
   ];
 
+  // Параметры исполнительных механизмов
+  const ims = [formatIm('Котла-утилизатора', `Исполнительный механизм котла ВР${furnaceNumber}`)];
+
+  // Параметры исполнительных механизмов
+  const gorelki = [formatIm('Мощность горелки', `Мощность горелки ВР${furnaceNumber}`)];
+
   // Объединение всех параметров в один массив
   const parameters = [
     `Режим работы печи: ${data[`Печь ВР${furnaceNumber} Режим работы печи:`]}`,
@@ -82,6 +96,12 @@ export const generateTablePechVr = (data, furnaceNumber, currentTime) => {
     '',
     'Разрежения:',
     ...vacuums,
+    '',
+    'Исполнительные механизмы:',
+    ...ims,
+    '',
+    'Мощности горелки:',
+    ...gorelki,
     '',
     `Обновлено: ${currentTime}`,
   ];

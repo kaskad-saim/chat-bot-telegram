@@ -1,12 +1,12 @@
 import { ChartJSNodeCanvas } from 'chartjs-node-canvas';
 import { FurnaceVR1, FurnaceVR2 } from '../models/FurnanceModel.js';
 
-const generateChart = async (FurnaceModel, keys, labels, yAxisTitle, chartTitle, yMin, yMax) => {
+const generateChart = async (FurnaceModel, keys, labels, yAxisTitle, chartTitle, yMin, yMax, yAxisStep) => {
   const currentTime = new Date();
   const oneHourAgo = new Date(currentTime.getTime() - 24 * 60 * 60 * 1000);
 
   const datasetsPromises = keys.map((key) => {
-    return FurnaceModel.find({ key, timestamp: { $gte: oneHourAgo.toLocaleString('ru-RU') } }).sort({ timestamp: 1 });
+    return FurnaceModel.find({ key, timestamp: { $gte: oneHourAgo } }).sort({ timestamp: 1 });
   });
 
   const datasets = await Promise.all(datasetsPromises);
@@ -18,12 +18,12 @@ const generateChart = async (FurnaceModel, keys, labels, yAxisTitle, chartTitle,
     }
   });
 
-  const timestamps = datasets[0].map((d) => d.timestamp);
+  const timestamps = datasets[0].map((d) => new Date(d.timestamp).toLocaleString());
   const values = datasets.map((dataset) => dataset.map((d) => parseFloat(d.value.replace(',', '.'))));
 
   const colors = [
-    'rgb(255, 99, 132)',
     'rgb(54, 162, 235)',
+    'rgb(255, 99, 132)',
     'rgb(255, 206, 86)',
     'rgb(75, 192, 192)',
     'rgb(153, 102, 255)',
@@ -49,6 +49,7 @@ const generateChart = async (FurnaceModel, keys, labels, yAxisTitle, chartTitle,
         data,
         fill: false,
         borderColor: colors[index % colors.length],
+        backgroundColor: colors[index % colors.length],
         borderWidth: 1.5,
         tension: 0.1,
         pointRadius: 0,
@@ -67,6 +68,10 @@ const generateChart = async (FurnaceModel, keys, labels, yAxisTitle, chartTitle,
           title: { display: true, text: yAxisTitle },
           min: yMin,
           max: yMax,
+          beginAtZero: false,
+          ticks: {
+            stepSize: yAxisStep,
+          },
         },
       },
       plugins: {
@@ -120,10 +125,11 @@ export const generateTemperatureChartVR1 = async () => {
       'Температура воды в ванне скруббер',
       'Температура гранул после холод-ка',
     ],
-    'Температура',
+    'Температура (°C)',
     'График температуры печи карбонизации №1',
     0,
-    1500
+    1500,
+    100
   );
 };
 
@@ -162,10 +168,11 @@ export const generateTemperatureChartVR2 = async () => {
       'Температура воды в ванне скруббер',
       'Температура гранул после холод-ка',
     ],
-    'Температура',
+    'Температура (°C)',
     'График температуры печи карбонизации №2',
     0,
-    1500
+    1500,
+    100
   );
 };
 
@@ -179,6 +186,7 @@ export const generatePressureChartVR1 = async () => {
       'Разрежение в топке печи печь ВР1',
       'Разрежение в пространстве котла утилизатора печь ВР1',
       'Разрежение низ загрузочной камеры печь ВР1',
+      'Мощность горелки ВР1',
     ],
     [
       'Давление газов после скруббера',
@@ -186,11 +194,13 @@ export const generatePressureChartVR1 = async () => {
       'Разрежение в топке',
       'Разрежение в пространстве котла утилизатора',
       'Разрежение низ загрузочной камеры',
+      'Мощность горелки',
     ],
-    'Давление/Разрежение',
+    'Давление/Разрежение (кгс/м2, кгс/см2)',
     'График давления/разрежения печи карбонизации №1',
     -30,
-    30
+    30,
+    5
   );
 };
 
@@ -203,6 +213,7 @@ export const generatePressureChartVR2 = async () => {
       'Разрежение в топке печи печь ВР2',
       'Разрежение в пространстве котла утилизатора печь ВР2',
       'Разрежение низ загрузочной камеры печь ВР2',
+      'Мощность горелки ВР2',
     ],
     [
       'Давление газов после скруббера',
@@ -210,11 +221,13 @@ export const generatePressureChartVR2 = async () => {
       'Разрежение в топке',
       'Разрежение в пространстве котла утилизатора',
       'Разрежение низ загрузочной камеры',
+      'Мощность горелки',
     ],
-    'Давление/Разрежение',
+    'Давление/Разрежение (кгс/м2, кгс/см2)',
     'График давления/разрежения печи карбонизации №2',
     -30,
-    30
+    30,
+    5
   );
 };
 
@@ -222,23 +235,25 @@ export const generatePressureChartVR2 = async () => {
 export const generateWaterLevelChartVR1 = async () => {
   return generateChart(
     FurnaceVR1,
-    ['Уровень воды в барабане котла печь ВР1'],
-    ['Уровень воды'],
-    'Уровень',
+    ['Уровень воды в барабане котла печь ВР1', 'Исполнительный механизм котла ВР1'],
+    ['Уровень воды', 'Степень открытия исполнительного механизма'],
+    'Уровень (мм)',
     'График уровня воды в барабане котла печи карбонизации №1',
     -200,
-    200
+    200,
+    10
   );
 };
 
 export const generateWaterLevelChartVR2 = async () => {
   return generateChart(
     FurnaceVR2,
-    ['Уровень воды в барабане котла печь ВР2'],
-    ['Уровень воды'],
-    'Уровень',
+    ['Уровень воды в барабане котла печь ВР2', 'Исполнительный механизм котла ВР2'],
+    ['Уровень воды', 'Степень открытия исполнительного механизма'],
+    'Уровень (мм)',
     'График уровня воды в барабане котла печи карбонизации №2',
     -200,
-    200
+    200,
+    10
   );
 };
