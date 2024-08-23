@@ -17,26 +17,27 @@ const logsDir = path.join(__dirname, 'logs');
 
 // Проверяем и создаем папку logs
 if (!fs.existsSync(logsDir)) {
-    fs.mkdirSync(logsDir);
+  fs.mkdirSync(logsDir);
 }
 
 function logErrorWithTime(error) {
-    const currentTime = new Date().toLocaleString();
-    const errorMessage = `[${currentTime}] ${error.stack || error.message}\n`;
+  const currentTime = new Date().toLocaleString();
+  const errorMessage = `[${currentTime}] ${error.stack || error.message}\n`;
 
-    console.error(errorMessage); // Выводим ошибку в консоль с временем
+  console.error(errorMessage); // Выводим ошибку в консоль с временем
 
-    fs.appendFile(path.join(logsDir, 'errors.log'), errorMessage, (err) => {
-        if (err) {
-            console.error(`Не удалось записать ошибку в файл: ${err.message}`);
-        } else {
-            console.log('Ошибка успешно записана в файл');
-        }
-    });
+  fs.appendFile(path.join(logsDir, 'errors.log'), errorMessage, (err) => {
+    if (err) {
+      console.error(`Не удалось записать ошибку в файл: ${err.message}`);
+    } else {
+      console.log('Ошибка успешно записана в файл');
+    }
+  });
 }
 
 // Подключение к MongoDB с обработкой ошибок
-mongoose.connect('mongodb://localhost:27017/furnaceData')
+mongoose
+  .connect(config.MONGODB_URI)
   .then(() => {
     console.log('Connected to MongoDB');
   })
@@ -52,17 +53,17 @@ const bot = createTelegramBot(app);
 
 // Обработка polling_error
 bot.on('polling_error', (error) => {
-    logErrorWithTime(error);
+  logErrorWithTime(error);
 });
 
 // Обработка всех необработанных ошибок
 process.on('uncaughtException', (err) => {
-    logErrorWithTime(err);
+  logErrorWithTime(err);
 });
 
 // Обработка ошибок промисов, которые не были обработаны
 process.on('unhandledRejection', (reason, promise) => {
-    logErrorWithTime(reason);
+  logErrorWithTime(reason);
 });
 
 // Регистрация маршрутов после инициализации бота
@@ -70,8 +71,8 @@ updateValuesRoute(app);
 
 // Обработка ошибок маршрутов и других middleware
 app.use((err, req, res, next) => {
-    logErrorWithTime(err);
-    res.status(500).json({ message: 'Internal Server Error' });
+  logErrorWithTime(err);
+  res.status(500).json({ message: 'Internal Server Error' });
 });
 
 app.listen(PORT, () => {
