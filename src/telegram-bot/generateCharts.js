@@ -1,12 +1,23 @@
 import { ChartJSNodeCanvas } from 'chartjs-node-canvas';
 import { FurnaceVR1, FurnaceVR2 } from '../models/FurnanceModel.js';
 
-const generateChart = async (FurnaceModel, keys, labels, yAxisTitle, chartTitle, yMin, yMax, yAxisStep) => {
+const generateChart = async (
+  FurnaceModel,
+  keys,
+  labels,
+  yAxisTitle,
+  chartTitle,
+  yMin,
+  yMax,
+  yAxisStep,
+  timeRangeInHours // новый аргумент
+) => {
   const currentTime = new Date();
-  const oneHourAgo = new Date(currentTime.getTime() - 24 * 60 * 60 * 1000);
+  const timeRangeInMillis = timeRangeInHours * 60 * 60 * 1000; // переводим время в миллисекунды
+  const timeAgo = new Date(currentTime.getTime() - timeRangeInMillis);
 
   const datasetsPromises = keys.map((key) => {
-    return FurnaceModel.find({ key, timestamp: { $gte: oneHourAgo } }).sort({ timestamp: 1 });
+    return FurnaceModel.find({ key, timestamp: { $gte: timeAgo } }).sort({ timestamp: 1 });
   });
 
   const datasets = await Promise.all(datasetsPromises);
@@ -14,7 +25,7 @@ const generateChart = async (FurnaceModel, keys, labels, yAxisTitle, chartTitle,
   datasets.forEach((dataset, index) => {
     if (dataset.length === 0) {
       console.error(`No data found for ${keys[index]}`);
-      throw new Error(`Нет данных для ${keys[index]} за последний час для ${chartTitle}.`);
+      throw new Error(`Нет данных для ${keys[index]} за выбранный период времени для ${chartTitle}.`);
     }
   });
 
@@ -90,170 +101,161 @@ const generateChart = async (FurnaceModel, keys, labels, yAxisTitle, chartTitle,
 };
 
 // Температура: от 0 до 1500
-export const generateTemperatureChartVR1 = async () => {
+// Функция генерации графиков температуры
+const generateTemperatureChart = async (FurnaceModel, chartTitle, timeRangeInHours, suffix) => {
+
+  const Keys = [
+    `Температура 1-СК печь ${suffix}`,
+    `Температура 2-СК печь ${suffix}`,
+    `Температура 3-СК печь ${suffix}`,
+    `Температура в топке печь ${suffix}`,
+    `Температура вверху камеры загрузки печь ${suffix}`,
+    `Температура внизу камеры загрузки печь ${suffix}`,
+    `Температура на входе печи дожига печь ${suffix}`,
+    `Температура на выходе печи дожига печь ${suffix}`,
+    `Температура камеры выгрузки печь ${suffix}`,
+    `Температура дымовых газов котла печь ${suffix}`,
+    `Температура газов до скруббера печь ${suffix}`,
+    `Температура газов после скруббера печь ${suffix}`,
+    `Температура воды в ванне скруббер печь ${suffix}`,
+    `Температура гранул после холод-ка печь ${suffix}`,
+  ];
+
+  const labels = [
+    'Температура 1-СК',
+    'Температура 2-СК',
+    'Температура 3-СК',
+    'Температура в топке',
+    'Температура вверху камеры загрузки',
+    'Температура внизу камеры загрузки',
+    'Температура на входе печи дожига',
+    'Температура на выходе печи дожига',
+    'Температура камеры выгрузки',
+    'Температура дымовых газов котла',
+    'Температура газов до скруббера',
+    'Температура газов после скруббера',
+    'Температура воды в ванне скруббер',
+    'Температура гранул после холод-ка',
+  ];
+
   return generateChart(
-    FurnaceVR1,
-    [
-      'Температура 1-СК печь ВР1',
-      'Температура 2-СК печь ВР1',
-      'Температура 3-СК печь ВР1',
-      'Температура в топке печь ВР1',
-      'Температура вверху камеры загрузки печь ВР1',
-      'Температура внизу камеры загрузки печь ВР1',
-      'Температура на входе печи дожига печь ВР1',
-      'Температура на выходе печи дожига печь ВР1',
-      'Температура камеры выгрузки печь ВР1',
-      'Температура дымовых газов котла печь ВР1',
-      'Температура газов до скруббера печь ВР1',
-      'Температура газов после скруббера печь ВР1',
-      'Температура воды в ванне скруббер печь ВР1',
-      'Температура гранул после холод-ка печь ВР1',
-    ],
-    [
-      'Температура 1-СК',
-      'Температура 2-СК',
-      'Температура 3-СК',
-      'Температура в топке',
-      'Температура вверху камеры загрузки',
-      'Температура внизу камеры загрузки',
-      'Температура на входе печи дожига',
-      'Температура на выходе печи дожига',
-      'Температура камеры выгрузки',
-      'Температура дымовых газов котла',
-      'Температура газов до скруббера',
-      'Температура газов после скруббера',
-      'Температура воды в ванне скруббер',
-      'Температура гранул после холод-ка',
-    ],
+    FurnaceModel,
+    Keys,
+    labels,
     'Температура (°C)',
-    'График температуры печи карбонизации №1',
+    chartTitle,
     0,
     1500,
-    100
+    100,
+    timeRangeInHours
   );
 };
 
-export const generateTemperatureChartVR2 = async () => {
-  return generateChart(
-    FurnaceVR2,
-    [
-      'Температура 1-СК печь ВР2',
-      'Температура 2-СК печь ВР2',
-      'Температура 3-СК печь ВР2',
-      'Температура в топке печь ВР2',
-      'Температура вверху камеры загрузки печь ВР2',
-      'Температура внизу камеры загрузки печь ВР2',
-      'Температура на входе печи дожига печь ВР2',
-      'Температура на выходе печи дожига печь ВР2',
-      'Температура камеры выгрузки печь ВР2',
-      'Температура дымовых газов котла печь ВР2',
-      'Температура газов до скруббера печь ВР2',
-      'Температура газов после скруббера печь ВР2',
-      'Температура воды в ванне скруббер печь ВР2',
-      'Температура гранул после холод-ка печь ВР2',
-    ],
-    [
-      'Температура 1-СК',
-      'Температура 2-СК',
-      'Температура 3-СК',
-      'Температура в топке',
-      'Температура вверху камеры загрузки',
-      'Температура внизу камеры загрузки',
-      'Температура на входе печи дожига',
-      'Температура на выходе печи дожига',
-      'Температура камеры выгрузки',
-      'Температура дымовых газов котла',
-      'Температура газов до скруббера',
-      'Температура газов после скруббера',
-      'Температура воды в ванне скруббер',
-      'Температура гранул после холод-ка',
-    ],
-    'Температура (°C)',
-    'График температуры печи карбонизации №2',
-    0,
-    1500,
-    100
-  );
-};
+// Функция генерации графиков давления/разрежения
+const generatePressureChart = async (FurnaceModel, chartTitle, timeRangeInHours, suffix) => {
 
-// Давление/Разрежение: от -20 до 20
-export const generatePressureChartVR1 = async () => {
+  const Keys = [
+    `Давление газов после скруббера печь ${suffix}`,
+    `Давление пара в барабане котла печь ${suffix}`,
+    `Разрежение в топке печи печь ${suffix}`,
+    `Разрежение в пространстве котла утилизатора печь ${suffix}`,
+    `Разрежение низ загрузочной камеры печь ${suffix}`,
+    `Мощность горелки ${suffix}`,
+  ];
+
+  const labels = [
+    'Давление газов после скруббера',
+    'Давление пара в барабане котла',
+    'Разрежение в топке',
+    'Разрежение в пространстве котла утилизатора',
+    'Разрежение низ загрузочной камеры',
+    'Мощность горелки'
+  ];
+
   return generateChart(
-    FurnaceVR1,
-    [
-      'Давление газов после скруббера печь ВР1',
-      'Давление пара в барабане котла печь ВР1',
-      'Разрежение в топке печи печь ВР1',
-      'Разрежение в пространстве котла утилизатора печь ВР1',
-      'Разрежение низ загрузочной камеры печь ВР1',
-      'Мощность горелки ВР1',
-    ],
-    [
-      'Давление газов после скруббера',
-      'Давление пара в барабане котла',
-      'Разрежение в топке',
-      'Разрежение в пространстве котла утилизатора',
-      'Разрежение низ загрузочной камеры',
-      'Мощность горелки',
-    ],
+    FurnaceModel,
+    Keys,
+    labels,
     'Давление/Разрежение (кгс/м2, кгс/см2)',
-    'График давления/разрежения печи карбонизации №1',
+    chartTitle,
     -30,
     30,
-    5
+    5,
+    timeRangeInHours
   );
 };
 
-export const generatePressureChartVR2 = async () => {
-  return generateChart(
-    FurnaceVR2,
-    [
-      'Давление газов после скруббера печь ВР2',
-      'Давление пара в барабане котла печь ВР2',
-      'Разрежение в топке печи печь ВР2',
-      'Разрежение в пространстве котла утилизатора печь ВР2',
-      'Разрежение низ загрузочной камеры печь ВР2',
-      'Мощность горелки ВР2',
-    ],
-    [
-      'Давление газов после скруббера',
-      'Давление пара в барабане котла',
-      'Разрежение в топке',
-      'Разрежение в пространстве котла утилизатора',
-      'Разрежение низ загрузочной камеры',
-      'Мощность горелки',
-    ],
-    'Давление/Разрежение (кгс/м2, кгс/см2)',
-    'График давления/разрежения печи карбонизации №2',
-    -30,
-    30,
-    5
-  );
-};
+// / Функция генерации графиков уровня
+const generateWaterLevelChart = async (FurnaceModel, chartTitle, timeRangeInHours, suffix) => {
 
-// Уровень воды: от -200 до 200
-export const generateWaterLevelChartVR1 = async () => {
+  const Keys = [
+    `Уровень воды в барабане котла печь ${suffix}`,
+    `Исполнительный механизм котла ${suffix}`
+  ];
+
+  const labels = [
+    'Уровень воды',
+    'Степень открытия исполнительного механизма'
+  ];
+
   return generateChart(
-    FurnaceVR1,
-    ['Уровень воды в барабане котла печь ВР1', 'Исполнительный механизм котла ВР1'],
-    ['Уровень воды', 'Степень открытия исполнительного механизма'],
+    FurnaceModel,
+    Keys,
+    labels,
     'Уровень (мм)',
-    'График уровня воды в барабане котла печи карбонизации №1',
+    chartTitle,
     -200,
     200,
-    10
+    10,
+    timeRangeInHours
   );
 };
 
-export const generateWaterLevelChartVR2 = async () => {
-  return generateChart(
-    FurnaceVR2,
-    ['Уровень воды в барабане котла печь ВР2', 'Исполнительный механизм котла ВР2'],
-    ['Уровень воды', 'Степень открытия исполнительного механизма'],
-    'Уровень (мм)',
-    'График уровня воды в барабане котла печи карбонизации №2',
-    -200,
-    200,
-    10
-  );
-};
+// Вызов температур
+export const generateTemperature24HourChartVR1 = () =>
+  generateTemperatureChart(FurnaceVR1, 'График температуры печи карбонизации №1 за сутки', 24, 'ВР1');
+export const generateTemperature24HourChartVR2 = () =>
+  generateTemperatureChart(FurnaceVR2, 'График температуры печи карбонизации №2 за сутки', 24, 'ВР2');
+
+export const generateTemperature12HourChartVR1 = () =>
+  generateTemperatureChart(FurnaceVR1, 'График температуры печи карбонизации №1 за 12 часов', 12, 'ВР1');
+export const generateTemperature12HourChartVR2 = () =>
+  generateTemperatureChart(FurnaceVR2, 'График температуры печи карбонизации №2 за 12 часов', 12, 'ВР2');
+
+export const generateTemperatureOneHourChartVR1 = () =>
+  generateTemperatureChart(FurnaceVR1, 'График температуры печи карбонизации №1 за последний час', 1, 'ВР1');
+export const generateTemperatureOneHourChartVR2 = () =>
+  generateTemperatureChart(FurnaceVR2, 'График температуры печи карбонизации №2 за последний час', 1, 'ВР2');
+
+// Вызов разрежения/давления
+export const generatePressure24HourChartVR1 = () =>
+generatePressureChart(FurnaceVR1, 'График давления/разрежения печи карбонизации №1 за сутки', 24, 'ВР1');
+export const generatePressure24HourChartVR2 = () =>
+generatePressureChart(FurnaceVR2, 'График давления/разрежения печи карбонизации №2 за сутки', 24, 'ВР2');
+
+export const generatePressure12HourChartVR1 = () =>
+generatePressureChart(FurnaceVR1, 'График давления/разрежения печи карбонизации №1 за 12 часов', 12, 'ВР1');
+export const generatePressure12HourChartVR2 = () =>
+generatePressureChart(FurnaceVR2, 'График давления/разрежения печи карбонизации №2 за 12 часов', 12, 'ВР2');
+
+export const generatePressureOneHourChartVR1 = () =>
+generatePressureChart(FurnaceVR1, 'График давления/разрежения печи карбонизации №1 за последний час', 1, 'ВР1');
+export const generatePressureOneHourChartVR2 = () =>
+generatePressureChart(FurnaceVR2, 'График давления/разрежения печи карбонизации №2 за последний час', 1, 'ВР2');
+
+// Вызов уровня
+export const generateLevel24HourChartVR1 = () =>
+  generateWaterLevelChart(FurnaceVR1, 'График уровня печи карбонизации №1 за сутки', 24, 'ВР1');
+  export const generateLevel24HourChartVR2 = () =>
+  generateWaterLevelChart(FurnaceVR2, 'График уровня печи карбонизации №2 за сутки', 24, 'ВР2');
+
+  export const generateLevel12HourChartVR1 = () =>
+  generateWaterLevelChart(FurnaceVR1, 'График уровня печи карбонизации №1 за 12 часов', 12, 'ВР1');
+  export const generateLevel12HourChartVR2 = () =>
+  generateWaterLevelChart(FurnaceVR2, 'График уровня печи карбонизации №2 за 12 часов', 12, 'ВР2');
+
+  export const generateLevelOneHourChartVR1 = () =>
+  generateWaterLevelChart(FurnaceVR1, 'График уровня печи карбонизации №1 за последний час', 1, 'ВР1');
+  export const generateLevelOneHourChartVR2 = () =>
+  generateWaterLevelChart(FurnaceVR2, 'График уровня печи карбонизации №2 за последний час', 1, 'ВР2');
+

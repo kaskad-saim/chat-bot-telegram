@@ -3,21 +3,50 @@ import { editMessageWithButtons } from './editMessage.js';
 import { generateTablePechVr } from './generateTable.js';
 import { checkAndNotify } from './alarms.js';
 import {
-  generateTemperatureChartVR1,
-  generateTemperatureChartVR2,
-  generatePressureChartVR1,
-  generatePressureChartVR2,
-  generateWaterLevelChartVR1,
-  generateWaterLevelChartVR2,
+  generateTemperature24HourChartVR1,
+  generateTemperature24HourChartVR2,
+  generateTemperatureOneHourChartVR1,
+  generateTemperatureOneHourChartVR2,
+  generateTemperature12HourChartVR1,
+  generateTemperature12HourChartVR2,
+  generatePressure24HourChartVR1,
+  generatePressure24HourChartVR2,
+  generatePressureOneHourChartVR1,
+  generatePressureOneHourChartVR2,
+  generatePressure12HourChartVR1,
+  generatePressure12HourChartVR2,
+  generateLevel24HourChartVR1,
+  generateLevel24HourChartVR2,
+  generateLevelOneHourChartVR1,
+  generateLevelOneHourChartVR2,
+  generateLevel12HourChartVR1,
+  generateLevel12HourChartVR2,
 } from './generateCharts.js';
 
 const chartGenerators = {
-  chart_temperature_1: generateTemperatureChartVR1,
-  chart_temperature_2: generateTemperatureChartVR2,
-  chart_pressure_1: generatePressureChartVR1,
-  chart_pressure_2: generatePressureChartVR2,
-  chart_level_1: generateWaterLevelChartVR1,
-  chart_level_2: generateWaterLevelChartVR2,
+  chart_temperature_1_Day: (params) => generateTemperature24HourChartVR1(params),
+  chart_temperature_1_Twelve: (params) => generateTemperature12HourChartVR1(params),
+  chart_temperature_1_Hour: (params) => generateTemperatureOneHourChartVR1(params),
+
+  chart_temperature_2_Day: (params) => generateTemperature24HourChartVR2(params),
+  chart_temperature_2_Twelve: (params) => generateTemperature12HourChartVR2(params),
+  chart_temperature_2_Hour: (params) => generateTemperatureOneHourChartVR2(params),
+
+  chart_pressure_1_Day: (params) => generatePressure24HourChartVR1(params),
+  chart_pressure_1_Twelve: (params) => generatePressure12HourChartVR1(params),
+  chart_pressure_1_Hour: (params) => generatePressureOneHourChartVR1(params),
+
+  chart_pressure_2_Day: (params) => generatePressure24HourChartVR2(params),
+  chart_pressure_2_Twelve: (params) => generatePressure12HourChartVR2(params),
+  chart_pressure_2_Hour: (params) => generatePressureOneHourChartVR2(params),
+
+  chart_level_1_Day: (params) => generateLevel24HourChartVR1(params),
+  chart_level_1_Twelve: (params) => generateLevel12HourChartVR1(params),
+  chart_level_1_Hour: (params) => generateLevelOneHourChartVR1(params),
+
+  chart_level_2_Day: (params) => generateLevel24HourChartVR2(params),
+  chart_level_2_Twelve: (params) => generateLevel12HourChartVR2(params),
+  chart_level_2_Hour: (params) => generateLevelOneHourChartVR2(params),
 };
 
 export const handleMessage = (bot, chatId) => {
@@ -36,6 +65,7 @@ const getButtonsByAction = (action) => {
         { text: 'Текущие параметры', callback_data: 'get_temperature_1' },
         { text: 'Графики', callback_data: 'charts_1' },
       ],
+      // [{ text: 'Архив графиков', callback_data: 'charts_archive_1' }],
       [{ text: 'Назад', callback_data: 'production_carbon' }],
     ],
     furnace_2: [
@@ -43,6 +73,7 @@ const getButtonsByAction = (action) => {
         { text: 'Текущие параметры', callback_data: 'get_temperature_2' },
         { text: 'Графики', callback_data: 'charts_2' },
       ],
+      // [{ text: 'Архив графиков', callback_data: 'charts_archive_2' }],
       [{ text: 'Назад', callback_data: 'production_carbon' }],
     ],
     production_carbon: [
@@ -61,6 +92,36 @@ const getButtonsByAction = (action) => {
         { text: 'Назад', callback_data: 'furnace_1' },
       ],
     ],
+    chart_temperature_1: [
+      [
+        { text: 'За последний  час', callback_data: 'chart_temperature_1_Hour' },
+        { text: 'За 12 часов', callback_data: 'chart_temperature_1_Twelve' },
+      ],
+      [
+        { text: 'За последние сутки', callback_data: 'chart_temperature_1_Day' },
+        { text: 'Назад', callback_data: 'charts_1' },
+      ],
+    ],
+    chart_pressure_1: [
+      [
+        { text: 'За последний  час', callback_data: 'chart_pressure_1_Hour' },
+        { text: 'За 12 часов', callback_data: 'chart_pressure_1_Twelve' },
+      ],
+      [
+        { text: 'За последние сутки', callback_data: 'chart_pressure_1_Day' },
+        { text: 'Назад', callback_data: 'charts_1' },
+      ],
+    ],
+    chart_level_1: [
+      [
+        { text: 'За последний  час', callback_data: 'chart_level_1_Hour' },
+        { text: 'За 12 часов', callback_data: 'chart_level_1_Twelve' },
+      ],
+      [
+        { text: 'За последние сутки', callback_data: 'chart_level_1_Day' },
+        { text: 'Назад', callback_data: 'charts_1' },
+      ],
+    ],
     charts_2: [
       [
         { text: 'Температура', callback_data: 'chart_temperature_2' },
@@ -71,6 +132,56 @@ const getButtonsByAction = (action) => {
         { text: 'Назад', callback_data: 'furnace_2' },
       ],
     ],
+    chart_temperature_2: [
+      [
+        { text: 'За последний  час', callback_data: 'chart_temperature_2_Hour' },
+        { text: 'За 12 часов', callback_data: 'chart_temperature_2_Twelve' },
+      ],
+      [
+        { text: 'За последние сутки', callback_data: 'chart_temperature_2_Day' },
+        { text: 'Назад', callback_data: 'charts_2' },
+      ],
+    ],
+    chart_pressure_2: [
+      [
+        { text: 'За последний  час', callback_data: 'chart_pressure_2_Hour' },
+        { text: 'За 12 часов', callback_data: 'chart_pressure_2_Twelve' },
+      ],
+      [
+        { text: 'За последние сутки', callback_data: 'chart_pressure_2_Day' },
+        { text: 'Назад', callback_data: 'charts_2' },
+      ],
+    ],
+    chart_level_2: [
+      [
+        { text: 'За последний  час', callback_data: 'chart_level_2_Hour' },
+        { text: 'За 12 часов', callback_data: 'chart_level_2_Twelve' },
+      ],
+      [
+        { text: 'За последние сутки', callback_data: 'chart_level_2_Day' },
+        { text: 'Назад', callback_data: 'charts_2' },
+      ],
+    ],
+    // charts_archive_1: [
+    //   [
+    //     { text: 'Температура', callback_data: 'archive_temperature_1' },
+    //     { text: 'Давление/разрежение', callback_data: 'archive_pressure_1' },
+    //   ],
+    //   [
+    //     { text: 'Уровень', callback_data: 'archive_level_1' },
+    //     { text: 'Назад', callback_data: 'furnace_1' },
+    //   ],
+    // ],
+    // charts_archive_2: [
+    //   [
+    //     { text: 'Температура', callback_data: 'archive_temperature_2' },
+    //     { text: 'Давление/разрежение', callback_data: 'archive_pressure_2' },
+    //   ],
+    //   [
+    //     { text: 'Уровень', callback_data: 'archive_level_2' },
+    //     { text: 'Назад', callback_data: 'furnace_2' },
+    //   ],
+    // ],
     back_to_production: [[{ text: 'Производство Карбон', callback_data: 'production_carbon' }]],
     help: [[{ text: 'Назад', callback_data: 'back_to_main' }]],
     back_to_main: [
@@ -101,7 +212,7 @@ const handleChartGeneration = async (bot, chatId, action, messageId) => {
       : 'уровня';
 
     await bot.sendPhoto(chatId, chartBuffer, {
-      caption: `График ${chartType} для печи карбонизации №${furnaceNumber} за 24 часа`,
+      caption: `График ${chartType} для печи карбонизации №${furnaceNumber} `,
     });
 
     // После отправки графика вернем пользователю меню с выбором графика
