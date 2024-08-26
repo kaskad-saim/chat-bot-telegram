@@ -52,7 +52,7 @@ const chartGenerators = {
 export const handleMessage = (bot, chatId) => {
   sendMessageWithButtons(bot, chatId, 'Выберите интересующую опцию:', [
     [
-      { text: 'Производство Карбон', callback_data: 'production_carbon' },
+      { text: 'Карбон', callback_data: 'production_carbon' },
       { text: 'Справка', callback_data: 'help' },
     ],
   ]);
@@ -78,8 +78,8 @@ const getButtonsByAction = (action) => {
     ],
     production_carbon: [
       [
-        { text: 'Печь карбонизации 1', callback_data: 'furnace_1' },
-        { text: 'Печь карбонизации 2', callback_data: 'furnace_2' },
+        { text: 'ПК 1', callback_data: 'furnace_1' },
+        { text: 'ПК 2', callback_data: 'furnace_2' },
       ],
     ],
     charts_1: [
@@ -94,31 +94,31 @@ const getButtonsByAction = (action) => {
     ],
     chart_temperature_1: [
       [
-        { text: 'За последний  час', callback_data: 'chart_temperature_1_Hour' },
+        { text: 'За 1 час', callback_data: 'chart_temperature_1_Hour' },
         { text: 'За 12 часов', callback_data: 'chart_temperature_1_Twelve' },
       ],
       [
-        { text: 'За последние сутки', callback_data: 'chart_temperature_1_Day' },
+        { text: 'За 24 часа', callback_data: 'chart_temperature_1_Day' },
         { text: 'Назад', callback_data: 'charts_1' },
       ],
     ],
     chart_pressure_1: [
       [
-        { text: 'За последний  час', callback_data: 'chart_pressure_1_Hour' },
+        { text: 'За 1 час', callback_data: 'chart_pressure_1_Hour' },
         { text: 'За 12 часов', callback_data: 'chart_pressure_1_Twelve' },
       ],
       [
-        { text: 'За последние сутки', callback_data: 'chart_pressure_1_Day' },
+        { text: 'За 24 часа', callback_data: 'chart_pressure_1_Day' },
         { text: 'Назад', callback_data: 'charts_1' },
       ],
     ],
     chart_level_1: [
       [
-        { text: 'За последний  час', callback_data: 'chart_level_1_Hour' },
+        { text: 'За 1 час', callback_data: 'chart_level_1_Hour' },
         { text: 'За 12 часов', callback_data: 'chart_level_1_Twelve' },
       ],
       [
-        { text: 'За последние сутки', callback_data: 'chart_level_1_Day' },
+        { text: 'За 24 часа', callback_data: 'chart_level_1_Day' },
         { text: 'Назад', callback_data: 'charts_1' },
       ],
     ],
@@ -134,31 +134,31 @@ const getButtonsByAction = (action) => {
     ],
     chart_temperature_2: [
       [
-        { text: 'За последний  час', callback_data: 'chart_temperature_2_Hour' },
+        { text: 'За 1 час', callback_data: 'chart_temperature_2_Hour' },
         { text: 'За 12 часов', callback_data: 'chart_temperature_2_Twelve' },
       ],
       [
-        { text: 'За последние сутки', callback_data: 'chart_temperature_2_Day' },
+        { text: 'За 24 часа', callback_data: 'chart_temperature_2_Day' },
         { text: 'Назад', callback_data: 'charts_2' },
       ],
     ],
     chart_pressure_2: [
       [
-        { text: 'За последний  час', callback_data: 'chart_pressure_2_Hour' },
+        { text: 'За  1час', callback_data: 'chart_pressure_2_Hour' },
         { text: 'За 12 часов', callback_data: 'chart_pressure_2_Twelve' },
       ],
       [
-        { text: 'За последние сутки', callback_data: 'chart_pressure_2_Day' },
+        { text: 'За 24 часа', callback_data: 'chart_pressure_2_Day' },
         { text: 'Назад', callback_data: 'charts_2' },
       ],
     ],
     chart_level_2: [
       [
-        { text: 'За последний  час', callback_data: 'chart_level_2_Hour' },
+        { text: 'За 1 час', callback_data: 'chart_level_2_Hour' },
         { text: 'За 12 часов', callback_data: 'chart_level_2_Twelve' },
       ],
       [
-        { text: 'За последние сутки', callback_data: 'chart_level_2_Day' },
+        { text: 'За 24 часа', callback_data: 'chart_level_2_Day' },
         { text: 'Назад', callback_data: 'charts_2' },
       ],
     ],
@@ -182,11 +182,11 @@ const getButtonsByAction = (action) => {
     //     { text: 'Назад', callback_data: 'furnace_2' },
     //   ],
     // ],
-    back_to_production: [[{ text: 'Производство Карбон', callback_data: 'production_carbon' }]],
+    back_to_production: [[{ text: 'Карбон', callback_data: 'production_carbon' }]],
     help: [[{ text: 'Назад', callback_data: 'back_to_main' }]],
     back_to_main: [
       [
-        { text: 'Производство Карбон', callback_data: 'production_carbon' },
+        { text: 'Карбон', callback_data: 'production_carbon' },
         { text: 'Справка', callback_data: 'help' },
       ],
     ],
@@ -228,9 +228,9 @@ export const handleHelp = async (bot, chatId, messageId) => {
   const helpMessage = `
     **Инструкция по работе с приложением:**
 
-    1. Производство Карбон: Выберите печь карбонизации для просмотра текущих параметров или графиков.
+    1. Карбон: Выберите печь карбонизации для просмотра текущих параметров или графиков.
 
-    2. Печь карбонизации: Вы можете выбрать одну из печей для просмотра текущих параметров и графиков. Также можно вернуться к предыдущему меню.
+    2. ПК: Вы можете выбрать одну из печей карбонизации для просмотра текущих параметров и графиков. Также можно вернуться к предыдущему меню.
 
     3. Текущие параметры: Просмотр параметров, таких как температура и давление, для выбранной печи.
 

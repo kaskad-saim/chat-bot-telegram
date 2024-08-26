@@ -160,7 +160,6 @@ const generatePressureChart = async (FurnaceModel, chartTitle, timeRangeInHours,
     `Разрежение в топке печи печь ${suffix}`,
     `Разрежение в пространстве котла утилизатора печь ${suffix}`,
     `Разрежение низ загрузочной камеры печь ${suffix}`,
-    `Мощность горелки ${suffix}`,
   ];
 
   const labels = [
