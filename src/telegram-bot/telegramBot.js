@@ -1,7 +1,10 @@
 import TelegramBot from 'node-telegram-bot-api';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import { config } from '../config/config.js';
-import { startMessage, handleCallbackQuery, handleHelp } from './buttonHandlers.js';
+import { startMessage } from '../telegram-bot/buttons/startMessage.js';
+import { handleCallbackQuery } from '../telegram-bot/buttons/callbackQueryHandler.js';
+import { handleHelp } from '../telegram-bot/buttons/helpHandler.js';
+
 
 // Список авторизованных пользователей с фамилиями
 const AUTHORIZED_USERS = new Map(
