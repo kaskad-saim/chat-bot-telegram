@@ -5,7 +5,6 @@ import { startMessage } from '../telegram-bot/buttons/startMessage.js';
 import { handleCallbackQuery } from '../telegram-bot/buttons/callbackQueryHandler.js';
 import { handleHelp } from '../telegram-bot/buttons/helpHandler.js';
 
-
 // Список авторизованных пользователей с фамилиями
 const AUTHORIZED_USERS = new Map(
   (process.env.AUTHORIZED_USERS || '')
@@ -75,6 +74,5 @@ const createTelegramBot = (app) => {
 
   return bot;
 };
-
 
 export default createTelegramBot;

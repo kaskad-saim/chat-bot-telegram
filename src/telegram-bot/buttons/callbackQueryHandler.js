@@ -3,6 +3,7 @@ import { handleChartGeneration } from '../buttons/chartHandlers.js';
 import { generateTablePechVr } from '../generateTable.js';
 import { checkAndNotify } from '../alarms.js';
 import { chartGenerators } from '../buttons/chartGenerators.js'; // Исправленный импорт
+import { handleHelp } from '../buttons/helpHandler.js';
 
 export const handleCallbackQuery = async (bot, app, query) => {
   const chatId = query.message.chat.id;
@@ -35,11 +36,12 @@ export const handleCallbackQuery = async (bot, app, query) => {
       await checkAndNotify(data, bot, chatId, furnaceNumber, query.message.message_id);
     } else if (chartGenerators[action]) {
       await handleChartGeneration(bot, chatId, action);
+    } else if (action === 'help') {
+      await handleHelp(bot, chatId, query.message.message_id);
     } else {
       const actionMap = {
-        'furnace_1': 'Печи карбонизации 1',
-        'furnace_2': 'Печи карбонизации 2',
-        'help': 'Помощь',
+        'furnace_1': 'Печи карбонизации №1',
+        'furnace_2': 'Печи карбонизации №2',
         'back_to_main': 'Выберите интересующую опцию:',
       };
 
