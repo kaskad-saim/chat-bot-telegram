@@ -49,13 +49,15 @@ const chartGenerators = {
   chart_level_2_Hour: (params) => generateLevelOneHourChartVR2(params),
 };
 
-export const handleMessage = (bot, chatId) => {
-  sendMessageWithButtons(bot, chatId, 'Выберите интересующую опцию:', [
-    [
-      { text: 'Карбон', callback_data: 'production_carbon' },
-      { text: 'Справка', callback_data: 'help' },
-    ],
-  ]);
+export const startMessage = (bot, chatId, command) => {
+  if (command === '/start') {
+    sendMessageWithButtons(bot, chatId, 'Выберите интересующую опцию:', [
+      [
+        { text: 'Карбон', callback_data: 'production_carbon' },
+        { text: 'Справка', callback_data: 'help' },
+      ],
+    ]);
+  };
 };
 
 const getButtonsByAction = (action) => {
@@ -65,7 +67,7 @@ const getButtonsByAction = (action) => {
         { text: 'Текущие параметры', callback_data: 'get_temperature_1' },
         { text: 'Графики', callback_data: 'charts_1' },
       ],
-      // [{ text: 'Архив графиков', callback_data: 'charts_archive_1' }],
+      [{ text: 'Архив графиков', callback_data: 'charts_archive_1' }],
       [{ text: 'Назад', callback_data: 'production_carbon' }],
     ],
     furnace_2: [
@@ -73,7 +75,7 @@ const getButtonsByAction = (action) => {
         { text: 'Текущие параметры', callback_data: 'get_temperature_2' },
         { text: 'Графики', callback_data: 'charts_2' },
       ],
-      // [{ text: 'Архив графиков', callback_data: 'charts_archive_2' }],
+      [{ text: 'Архив графиков', callback_data: 'charts_archive_2' }],
       [{ text: 'Назад', callback_data: 'production_carbon' }],
     ],
     production_carbon: [
@@ -162,26 +164,26 @@ const getButtonsByAction = (action) => {
         { text: 'Назад', callback_data: 'charts_2' },
       ],
     ],
-    // charts_archive_1: [
-    //   [
-    //     { text: 'Температура', callback_data: 'archive_temperature_1' },
-    //     { text: 'Давление/разрежение', callback_data: 'archive_pressure_1' },
-    //   ],
-    //   [
-    //     { text: 'Уровень', callback_data: 'archive_level_1' },
-    //     { text: 'Назад', callback_data: 'furnace_1' },
-    //   ],
-    // ],
-    // charts_archive_2: [
-    //   [
-    //     { text: 'Температура', callback_data: 'archive_temperature_2' },
-    //     { text: 'Давление/разрежение', callback_data: 'archive_pressure_2' },
-    //   ],
-    //   [
-    //     { text: 'Уровень', callback_data: 'archive_level_2' },
-    //     { text: 'Назад', callback_data: 'furnace_2' },
-    //   ],
-    // ],
+    charts_archive_1: [
+      [
+        { text: 'Температура', callback_data: 'archive_temperature_1' },
+        { text: 'Давление/разрежение', callback_data: 'archive_pressure_1' },
+      ],
+      [
+        { text: 'Уровень', callback_data: 'archive_level_1' },
+        { text: 'Назад', callback_data: 'furnace_1' },
+      ],
+    ],
+    charts_archive_2: [
+      [
+        { text: 'Температура', callback_data: 'archive_temperature_2' },
+        { text: 'Давление/разрежение', callback_data: 'archive_pressure_2' },
+      ],
+      [
+        { text: 'Уровень', callback_data: 'archive_level_2' },
+        { text: 'Назад', callback_data: 'furnace_2' },
+      ],
+    ],
     back_to_production: [[{ text: 'Карбон', callback_data: 'production_carbon' }]],
     help: [[{ text: 'Назад', callback_data: 'back_to_main' }]],
     back_to_main: [
@@ -195,7 +197,7 @@ const getButtonsByAction = (action) => {
   return buttons[action] || buttons.back_to_production;
 };
 
-const handleChartGeneration = async (bot, chatId, action, messageId) => {
+const handleChartGeneration = async (bot, chatId, action) => {
   const generateChart = chartGenerators[action];
   if (!generateChart) return;
 
@@ -204,18 +206,15 @@ const handleChartGeneration = async (bot, chatId, action, messageId) => {
     if (!chartBuffer || chartBuffer.length === 0) {
       throw new Error(`График не был создан для ${action}`);
     }
+
     const furnaceNumber = action.includes('1') ? 1 : 2;
-    const chartType = action.includes('temperature')
-      ? 'температуры'
-      : action.includes('pressure')
-      ? 'давления/разрежения'
-      : 'уровня';
+    const chartType = action.includes('temperature') ? 'температуры' :
+                      action.includes('pressure') ? 'давления/разрежения' : 'уровня';
 
     await bot.sendPhoto(chatId, chartBuffer, {
-      caption: `График ${chartType} для печи карбонизации №${furnaceNumber} `,
+      caption: `График ${chartType} для печи карбонизации №${furnaceNumber}`,
     });
 
-    // После отправки графика вернем пользователю меню с выбором графика
     const buttonSet = getButtonsByAction(`charts_${furnaceNumber}`);
     await sendMessageWithButtons(bot, chatId, 'Выберите следующий график или вернитесь назад:', buttonSet);
   } catch (error) {
@@ -224,31 +223,24 @@ const handleChartGeneration = async (bot, chatId, action, messageId) => {
   }
 };
 
-export const handleHelp = async (bot, chatId, messageId) => {
+export const handleHelp = async (bot, chatId) => {
   const helpMessage = `
     **Инструкция по работе с приложением:**
 
     1. Карбон: Выберите печь карбонизации для просмотра текущих параметров или графиков.
-
     2. ПК: Вы можете выбрать одну из печей карбонизации для просмотра текущих параметров и графиков. Также можно вернуться к предыдущему меню.
-
     3. Текущие параметры: Просмотр параметров, таких как температура и давление, для выбранной печи.
-
     4. Графики: Просмотр графиков температуры, давления и уровня для выбранной печи.
-
     5. Алармы: Проверка и уведомления об ошибках и тревожных сигналах для печи.
-
     6. Назад: Возвращение к предыдущему меню.
 
     Для получения дополнительной помощи, пожалуйста, обратитесь к администратору системы.
   `;
 
-  const buttonSet = [[{ text: 'Назад', callback_data: 'back_to_main' }]];
-
   await bot.sendMessage(chatId, helpMessage, {
     parse_mode: 'Markdown',
     reply_markup: {
-      inline_keyboard: buttonSet,
+      inline_keyboard: [[{ text: 'Назад', callback_data: 'back_to_main' }]],
     },
   });
 };
@@ -257,7 +249,6 @@ export const handleCallbackQuery = async (bot, app, query) => {
   const chatId = query.message.chat.id;
   const action = query.data;
 
-  // Ответ на callback_query, чтобы остановить моргание кнопки и избежать ошибки "query is too old"
   await bot.answerCallbackQuery(query.id);
 
   try {
@@ -267,19 +258,16 @@ export const handleCallbackQuery = async (bot, app, query) => {
       const data = app.locals.data;
 
       const table = generateTablePechVr(data, furnaceNumber, currentTime);
+      const buttonSet = [
+        [{ text: 'Алармы', callback_data: `check_alarms_${furnaceNumber}` }],
+        [{ text: 'Обновить', callback_data: action }],
+        [{ text: 'Назад', callback_data: `furnace_${furnaceNumber}` }],
+      ];
 
       await bot.editMessageText(table, {
         chat_id: chatId,
         message_id: query.message.message_id,
-        reply_markup: {
-          inline_keyboard: [
-            [
-              { text: 'Алармы', callback_data: `check_alarms_${furnaceNumber}` },
-              { text: 'Обновить', callback_data: action },
-            ],
-            [{ text: 'Назад', callback_data: `furnace_${furnaceNumber}` }],
-          ],
-        },
+        reply_markup: { inline_keyboard: buttonSet },
       });
     } else if (action.startsWith('check_alarms_')) {
       const furnaceNumber = action.includes('1') ? 1 : 2;
@@ -287,35 +275,22 @@ export const handleCallbackQuery = async (bot, app, query) => {
 
       await checkAndNotify(data, bot, chatId, furnaceNumber, query.message.message_id);
     } else if (chartGenerators[action]) {
-      await handleChartGeneration(bot, chatId, action, query.message.message_id);
-    } else if (action === 'furnace_1' || action === 'furnace_2') {
-      const buttonSet = getButtonsByAction(action);
-      const furnaceNumber = action === 'furnace_1' ? 1 : 2;
-      await bot.editMessageText(`Выберите опции для Печи карбонизации ${furnaceNumber}:`, {
-        chat_id: chatId,
-        message_id: query.message.message_id,
-        reply_markup: {
-          inline_keyboard: buttonSet,
-        },
-      });
-    } else if (action === 'help') {
-      await handleHelp(bot, chatId, query.message.message_id);
-    } else if (action === 'back_to_main') {
-      await bot.editMessageText('Выберите интересующую опцию:', {
-        chat_id: chatId,
-        message_id: query.message.message_id,
-        reply_markup: {
-          inline_keyboard: getButtonsByAction('back_to_main'),
-        },
-      });
+      await handleChartGeneration(bot, chatId, action);
     } else {
+      const actionMap = {
+        'furnace_1': 'Печи карбонизации 1',
+        'furnace_2': 'Печи карбонизации 2',
+        'help': 'Помощь',
+        'back_to_main': 'Выберите интересующую опцию:',
+      };
+
+      const messageText = actionMap[action] || 'Выберите интересующую опцию:';
       const buttonSet = getButtonsByAction(action);
-      await bot.editMessageText('Выберите интересующую опцию:', {
+
+      await bot.editMessageText(messageText, {
         chat_id: chatId,
         message_id: query.message.message_id,
-        reply_markup: {
-          inline_keyboard: buttonSet,
-        },
+        reply_markup: { inline_keyboard: buttonSet },
       });
     }
   } catch (error) {
@@ -323,3 +298,4 @@ export const handleCallbackQuery = async (bot, app, query) => {
     await bot.sendMessage(chatId, 'Произошла ошибка при выполнении вашего запроса. Пожалуйста, попробуйте позже.');
   }
 };
+

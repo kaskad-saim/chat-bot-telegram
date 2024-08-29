@@ -1,7 +1,7 @@
 import TelegramBot from 'node-telegram-bot-api';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import { config } from '../config/config.js';
-import { handleMessage, handleCallbackQuery, handleHelp } from './buttonHandlers.js';
+import { startMessage, handleCallbackQuery, handleHelp } from './buttonHandlers.js';
 
 // Список авторизованных пользователей с фамилиями
 const AUTHORIZED_USERS = new Map(
@@ -18,6 +18,12 @@ const createTelegramBot = (app) => {
     request: {
       agent: proxyAgent,
     },
+  });
+
+  //Функция кнопки /start
+  bot.onText(/\/start/, (msg) => {
+    const chatId = msg.chat.id;
+    startMessage(bot, chatId, '/start');
   });
 
   // Функция для проверки авторизации
@@ -45,8 +51,6 @@ const createTelegramBot = (app) => {
       // Обработка команды /help
       if (msg.text === '/help') {
         await handleHelp(bot, chatId, null); // null для messageId, если это не нужно
-      } else if (!msg.reply_to_message) {
-        handleMessage(bot, chatId);
       }
     }
   });
@@ -68,5 +72,6 @@ const createTelegramBot = (app) => {
 
   return bot;
 };
+
 
 export default createTelegramBot;
