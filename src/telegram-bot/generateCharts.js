@@ -84,6 +84,16 @@ const generateChart = async (
             stepSize: yAxisStep,
           },
         },
+        y2: {
+          title: { display: true, text: yAxisTitle },
+          position: 'right',
+          min: yMin,
+          max: yMax,
+          beginAtZero: false,
+          ticks: {
+            stepSize: yAxisStep,
+          },
+        },
       },
       plugins: {
         title: { display: true, text: chartTitle },
@@ -146,7 +156,7 @@ const generateTemperatureChart = async (FurnaceModel, chartTitle, timeRangeInHou
     chartTitle,
     0,
     1500,
-    100,
+    50,
     timeRangeInHours
   );
 };

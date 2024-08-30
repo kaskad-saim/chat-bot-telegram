@@ -34,6 +34,33 @@ export const handleCallbackQuery = async (bot, app, query) => {
       const data = app.locals.data;
 
       await checkAndNotify(data, bot, chatId, furnaceNumber, query.message.message_id);
+    } else if (action.startsWith('archive_')) {
+      // Определите тип графика и номер печи/датчика
+      let chartType;
+      let chartTitle;
+      const furnaceNumber = action.includes('1') ? 1 : 2;
+      if (action.startsWith('archive_temperature_')) {
+        chartType = 'температуры';
+        chartTitle = `График температуры печи карбонизации №${furnaceNumber} за сутки`;
+      } else if (action.startsWith('archive_pressure_')) {
+        chartType = 'давление/разрежение';
+        chartTitle = `График давления ${furnaceNumber === 1 ? '1' : '2'} за сутки`;
+      } else if (action.startsWith('archive_level_')) {
+        chartType = 'уровня';
+        chartTitle = `График уровня ${furnaceNumber === 1 ? '1' : '2'} за сутки`;
+      };
+      // Убедитесь, что userStates инициализирован
+      app.locals.userStates = app.locals.userStates || {};
+      // Запросите дату у пользователя
+      const requestDateMessage = await bot.sendMessage(chatId, `Введите дату в формате dd.mm.yyyy для графика ${chartType}.`);
+      // Сохраните состояние запроса для последующей обработки
+      app.locals.userStates[chatId] = {
+        action: `${action}`,
+        messageId: requestDateMessage.message_id,
+        chartType,
+        furnaceNumber
+      };
+
     } else if (chartGenerators[action]) {
       await handleChartGeneration(bot, chatId, action);
     } else if (action === 'help') {

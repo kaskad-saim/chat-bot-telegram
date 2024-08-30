@@ -1,9 +1,10 @@
 import TelegramBot from 'node-telegram-bot-api';
-import { HttpsProxyAgent } from 'https-proxy-agent';
+// import { HttpsProxyAgent } from 'https-proxy-agent';
 import { config } from '../config/config.js';
 import { startMessage } from '../telegram-bot/buttons/startMessage.js';
 import { handleCallbackQuery } from '../telegram-bot/buttons/callbackQueryHandler.js';
 import { handleHelp } from '../telegram-bot/buttons/helpHandler.js';
+import { handleTextMessage } from './buttons/handleTextMessage.js';
 
 // Список авторизованных пользователей с фамилиями
 const AUTHORIZED_USERS = new Map(
@@ -14,18 +15,26 @@ const AUTHORIZED_USERS = new Map(
 );
 
 const createTelegramBot = (app) => {
-  const proxyAgent = new HttpsProxyAgent(config.PROXY_URL);
+  // const proxyAgent = new HttpsProxyAgent(config.PROXY_URL);
   const bot = new TelegramBot(config.TELEGRAM_BOT_TOKEN, {
     polling: true,
-    request: {
-      agent: proxyAgent,
-    },
+    // request: {
+    //   agent: proxyAgent,
+    // },
   });
 
   //Функция кнопки /start
   bot.onText(/\/start/, (msg) => {
     const chatId = msg.chat.id;
     startMessage(bot, chatId, '/start');
+  });
+
+  // Слушаем текстовые сообщения
+  bot.on('message', async (msg) => {
+    // Обрабатываем текстовые сообщения
+    if (msg.text) {
+      await handleTextMessage(bot, app, msg);
+    }
   });
 
   // Функция для проверки авторизации
