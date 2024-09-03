@@ -96,14 +96,18 @@ export const handleTextMessage = async (bot, app, msg) => {
 
       // Удаляем сообщение с запросом даты
       await bot.deleteMessage(chatId, state.messageId);
-    } catch (error) {
-      await bot.sendMessage(chatId, `Ошибка: ${error.message}`);
-    }
 
-    // Очищаем состояние
-    delete app.locals.userStates[chatId];
+      // Очищаем состояние
+      delete app.locals.userStates[chatId];
+    } catch (error) {
+      await bot.sendMessage(chatId, `Ошибка: нет данных за этот период, либо вы ввели некорректную дату. Пожалуйста, попробуйте еще раз или нажмите "Назад" для выхода.`, {
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: 'Назад', callback_data: `furnace_${furnaceNumber}` }]
+          ]
+        }
+      });
+      // Не очищаем состояние, чтобы позволить повторный ввод
+    }
   }
 };
-
-
-

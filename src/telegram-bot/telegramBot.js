@@ -15,26 +15,8 @@ const AUTHORIZED_USERS = new Map(
 );
 
 const createTelegramBot = (app) => {
-  // const proxyAgent = new HttpsProxyAgent(config.PROXY_URL);
   const bot = new TelegramBot(config.TELEGRAM_BOT_TOKEN, {
     polling: true,
-    // request: {
-    //   agent: proxyAgent,
-    // },
-  });
-
-  //Функция кнопки /start
-  bot.onText(/\/start/, (msg) => {
-    const chatId = msg.chat.id;
-    startMessage(bot, chatId, '/start');
-  });
-
-  // Слушаем текстовые сообщения
-  bot.on('message', async (msg) => {
-    // Обрабатываем текстовые сообщения
-    if (msg.text) {
-      await handleTextMessage(bot, app, msg);
-    }
   });
 
   // Функция для проверки авторизации
@@ -48,9 +30,49 @@ const createTelegramBot = (app) => {
     return user ? user.surname : 'Неизвестный';
   };
 
+  // Обработка команды /start
+  bot.onText(/\/start/, (msg) => {
+    const chatId = msg.chat.id;
+    const userId = msg.from.id;
+
+    // Проверка авторизации
+    if (!checkAuthorization(userId)) {
+      bot.sendMessage(chatId, `У вас нет доступа к этому боту. Обратитесь к администратору. Вы - ${getUserSurname(userId)} пользователь`);
+      return;
+    }
+
+    startMessage(bot, chatId, '/start');
+  });
+
+  // Обработка команды /help
+  bot.onText(/\/help/, async (msg) => {
+    const chatId = msg.chat.id;
+    const userId = msg.from.id;
+
+    // Проверка авторизации
+    if (!checkAuthorization(userId)) {
+      bot.sendMessage(chatId, `У вас нет доступа к этому боту. Обратитесь к администратору. Вы - ${getUserSurname(userId)} пользователь`);
+      return;
+    }
+
+    // Отправляем сообщение, чтобы получить messageId
+    const sentMessage = await bot.sendMessage(chatId, 'Загрузка справки...', {
+      parse_mode: 'Markdown'
+    });
+
+    // Редактируем отправленное сообщение
+    handleHelp(bot, chatId, sentMessage.message_id);
+  });
+
+  // Слушаем все сообщения, кроме команд
   bot.on('message', async (msg) => {
     const chatId = msg.chat.id;
     const userId = msg.from.id;
+
+    // Игнорируем команды, чтобы избежать двойной обработки
+    if (msg.text && msg.text.startsWith('/')) {
+      return;
+    }
 
     // Проверка авторизации
     if (!checkAuthorization(userId)) {
@@ -58,14 +80,11 @@ const createTelegramBot = (app) => {
       return;
     }
 
-    if (msg.text) {
-      // Обработка команды /help
-      if (msg.text === '/help') {
-        await handleHelp(bot, chatId, null); // null для messageId, если это не нужно
-      }
-    }
+    // Обработка других текстовых сообщений
+    await handleTextMessage(bot, app, msg);
   });
 
+  // Обработка обратных вызовов
   bot.on('callback_query', async (query) => {
     const userId = query.from.id;
 

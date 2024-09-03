@@ -1,4 +1,4 @@
-export const handleHelp = async (bot, chatId) => {
+export const handleHelp = async (bot, chatId, messageId) => {
   const helpMessage = `
     **Инструкция по работе с приложением:**
 
@@ -12,7 +12,9 @@ export const handleHelp = async (bot, chatId) => {
     Для получения дополнительной помощи, пожалуйста, обратитесь к администратору системы.
   `;
 
-  await bot.sendMessage(chatId, helpMessage, {
+  await bot.editMessageText(helpMessage, {
+    chat_id: chatId,
+    message_id: messageId,
     parse_mode: 'Markdown',
     reply_markup: {
       inline_keyboard: [[{ text: 'Назад', callback_data: 'back_to_main' }]],
