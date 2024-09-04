@@ -1,4 +1,6 @@
-export const handleHelp = async (bot, chatId, messageId) => {
+import { handleAuth } from '../handlers/auth.js';
+
+export const handleHelp = async (bot, chatId, messageId, isHelpCommand = false) => {
   const helpMessage = `
     **Инструкция по работе с приложением:**
 
@@ -12,12 +14,26 @@ export const handleHelp = async (bot, chatId, messageId) => {
     Для получения дополнительной помощи, пожалуйста, обратитесь к администратору системы.
   `;
 
+  const replyMarkup = isHelpCommand ? {} : {
+    inline_keyboard: [[{ text: 'Назад', callback_data: 'back_to_main' }]],
+  };
+
   await bot.editMessageText(helpMessage, {
     chat_id: chatId,
     message_id: messageId,
     parse_mode: 'Markdown',
-    reply_markup: {
-      inline_keyboard: [[{ text: 'Назад', callback_data: 'back_to_main' }]],
-    },
+    reply_markup: replyMarkup,
   });
+};
+
+export const helpCommand = async (bot, chatId, userId) => {
+  if (!await handleAuth(bot, chatId, userId)) {
+    return;
+  }
+
+  const sentMessage = await bot.sendMessage(chatId, 'Загрузка справки...', {
+    parse_mode: 'Markdown',
+  });
+
+  handleHelp(bot, chatId, sentMessage.message_id, true); // Передаем true, чтобы указать, что это команда /help
 };

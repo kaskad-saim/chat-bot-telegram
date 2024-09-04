@@ -1,6 +1,7 @@
+import { handleAuth } from '../handlers/auth.js';
 import { sendMessageWithButtons } from '../sendMessage.js';
 
-export const startMessage = (bot, chatId, command) => {
+const startMessage = (bot, chatId, command) => {
   if (command === '/start') {
     sendMessageWithButtons(bot, chatId, 'Выберите интересующую опцию:', [
       [
@@ -9,4 +10,12 @@ export const startMessage = (bot, chatId, command) => {
       ],
     ]);
   }
+};
+
+export const startCommand = async (bot, chatId, userId) => {
+  if (!await handleAuth(bot, chatId, userId)) {
+    return;
+  }
+
+  startMessage(bot, chatId, '/start');
 };

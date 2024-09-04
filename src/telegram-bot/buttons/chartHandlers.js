@@ -8,8 +8,9 @@ export const handleChartGeneration = async (bot, chatId, action) => {
     await bot.sendMessage(chatId, 'Неизвестный тип графика. Пожалуйста, выберите другой график.');
     return;
   }
-
+  let loadingMessage;
   try {
+    loadingMessage = await bot.sendMessage(chatId, 'Загрузка графика, пожалуйста подождите...');
     const chartBuffer = await generateChart();
     if (!chartBuffer || chartBuffer.length === 0) {
       throw new Error(`График не был создан для ${action}`);
@@ -23,10 +24,14 @@ export const handleChartGeneration = async (bot, chatId, action) => {
       caption: `График ${chartType} для печи карбонизации №${furnaceNumber}`,
     });
 
+    await bot.deleteMessage(chatId, loadingMessage.message_id);
     const buttonSet = getButtonsByAction(`charts_${furnaceNumber}`);
     await sendMessageWithButtons(bot, chatId, 'Выберите следующий график или вернитесь назад:', buttonSet);
   } catch (error) {
     console.error(`Ошибка при генерации или отправке графика ${action}:`, error);
+    if (loadingMessage) {
+      await bot.deleteMessage(chatId, loadingMessage.message_id); // Удаление сообщения о загрузке в случае ошибки
+    }
     await bot.sendMessage(chatId, 'Произошла ошибка при создании графика. Пожалуйста, попробуйте позже.');
   }
 };

@@ -3,7 +3,7 @@ import { handleChartGeneration } from '../buttons/chartHandlers.js';
 import { generateTablePechVr } from '../generateTable.js';
 import { checkAndNotify } from '../alarms.js';
 import { chartGenerators } from '../buttons/chartGenerators.js'; // Исправленный импорт
-import { handleHelp } from '../buttons/helpHandler.js';
+import { handleHelp } from '../commands/help.js';
 
 export const handleCallbackQuery = async (bot, app, query) => {
   const chatId = query.message.chat.id;
@@ -35,7 +35,6 @@ export const handleCallbackQuery = async (bot, app, query) => {
 
       await checkAndNotify(data, bot, chatId, furnaceNumber, query.message.message_id);
     } else if (action.startsWith('archive_')) {
-      // Определите тип графика и номер печи/датчика
       let chartType;
       let chartTitle;
       const furnaceNumber = action.includes('1') ? 1 : 2;

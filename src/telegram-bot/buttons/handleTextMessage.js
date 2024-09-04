@@ -31,7 +31,6 @@ const charts_archive_2 = [
   ],
 ];
 
-// Обновленный код для функции handleTextMessage
 export const handleTextMessage = async (bot, app, msg) => {
   const chatId = msg.chat.id;
   const userMessage = msg.text; // Дата или число, введенное пользователем
@@ -67,10 +66,16 @@ export const handleTextMessage = async (bot, app, msg) => {
 
       console.log('Generating chart with:', generateChartForDate);
 
+      // Отправляем сообщение "Загрузка графика"
+      const loadingMessage = await bot.sendMessage(chatId, 'Загрузка графика, пожалуйста подождите...');
+
       const buffer = await generateChartForDate();
 
       // Отправляем график
       await bot.sendPhoto(chatId, buffer);
+
+      // Удаляем сообщение "Загрузка графика"
+      await bot.deleteMessage(chatId, loadingMessage.message_id);
 
       // Определяем описание сообщения с включением введенной пользователем даты
       let description;
