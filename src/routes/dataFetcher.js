@@ -99,8 +99,7 @@ export async function fetchData() {
       'Время записи на сервер для печь ВР2':data.timeVr[0],
     };
 
-    // Вывод всех извлеченных данных в консоль
-    console.log('Извлеченные данные:', namedData);
+    // console.log('Извлеченные данные:', namedData);
 
     for (const [key, value] of Object.entries(namedData)) {
       await axios.post('http://169.254.0.167:3001/update-values', { [key]: value });
