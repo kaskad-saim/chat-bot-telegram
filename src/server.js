@@ -4,8 +4,10 @@ import { fileURLToPath } from 'url';
 import mongoose from 'mongoose';
 import { config } from './config/config.js';
 import { updateValuesRoute } from './routes/updateValues.js';
+import { fetchData } from './routes/dataFetcher.js';
 import createTelegramBot from './telegram-bot/telegramBot.js';
 import fs from 'fs';
+
 
 const app = express();
 const PORT = config.PORT;
@@ -68,6 +70,8 @@ process.on('unhandledRejection', (reason, promise) => {
 
 // Регистрация маршрутов после инициализации бота
 updateValuesRoute(app);
+
+fetchData();
 
 // Обработка ошибок маршрутов и других middleware
 app.use((err, req, res, next) => {

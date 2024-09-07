@@ -5,7 +5,7 @@ import {
   generatePressureChartArchiveVR2,
   generateWaterLevelChartArchiveVR1,
   generateWaterLevelChartArchiveVR2
-} from '../generateArchives.js';
+} from '../generates/pechVr/generateArchives.js';
 
 // Определяем меню для печи 1
 const charts_archive_1 = [

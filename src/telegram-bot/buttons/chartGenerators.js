@@ -17,7 +17,7 @@ import {
   generateLevelOneHourChartVR2,
   generateLevel12HourChartVR1,
   generateLevel12HourChartVR2,
-} from '../generateCharts.js';
+} from '../generates/pechVr/generateCharts.js';
 
 export const chartGenerators = {
   chart_temperature_1_Day: (params) => generateTemperature24HourChartVR1(params),

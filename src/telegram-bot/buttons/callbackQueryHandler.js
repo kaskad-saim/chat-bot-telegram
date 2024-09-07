@@ -1,7 +1,7 @@
 import { getButtonsByAction } from '../buttons/buttonSets.js';
 import { handleChartGeneration } from '../buttons/chartHandlers.js';
-import { generateTablePechVr } from '../generateTable.js';
-import { checkAndNotify } from '../alarms.js';
+import { generateTablePechVr } from '../generates/pechVr/generatetable.js';
+import { checkAndNotify } from '../generates/pechVr/alarms.js';
 import { chartGenerators } from '../buttons/chartGenerators.js'; // Исправленный импорт
 import { handleHelp } from '../commands/help.js';
 

@@ -1,5 +1,5 @@
 import { ChartJSNodeCanvas } from 'chartjs-node-canvas';
-import { FurnaceVR1, FurnaceVR2 } from '../models/FurnanceModel.js';
+import { FurnaceVR1, FurnaceVR2 } from '../../../models/FurnanceModel.js';
 
 const generateChartForDate = async (
   FurnaceModel,

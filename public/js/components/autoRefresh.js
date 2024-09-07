@@ -1,5 +1,5 @@
-export const autoRefreshIframe = () => {
-  setInterval(() => {
-    location.reload();
-  }, 60000);
-};
+// export const autoRefreshIframe = () => {
+//   setInterval(() => {
+//     location.reload();
+//   }, 60000);
+// };

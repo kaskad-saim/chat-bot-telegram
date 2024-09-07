@@ -1,7 +1,7 @@
-import { editMessageWithButtons } from './editMessage.js';
+import { editMessageWithButtons } from '../../editMessage.js';
 
 export const checkAndNotify = (data, bot, chatId, furnaceNumber, messageId) => {
-  const temper1Skolz = data[`Температура 1-СК печь ВР${furnaceNumber}`];
+  const temper1Skolz = parseFloat(data[`Температура 1-СК печь ВР${furnaceNumber}`].replace(',', '.'));
   const temper2kolz = data[`Температура 2-СК печь ВР${furnaceNumber}`];
   const temper3Skolz = data[`Температура 3-СК печь ВР${furnaceNumber}`];
   const temperTopka = data[`Температура в топке печь ВР${furnaceNumber}`];
@@ -24,7 +24,19 @@ export const checkAndNotify = (data, bot, chatId, furnaceNumber, messageId) => {
   const razrezenieNizZagruz = data[`Разрежение низ загрузочной камеры печь ВР${furnaceNumber}`];
   const timeRecorded = data[`Время записи на сервер для печь ВР${furnaceNumber}`]; // Время записи на сервер
 
-  const mode = data[`Печь ВР${furnaceNumber} Режим работы печи:`];
+
+ // Определение режима работы печи
+ const determineFurnaceMode = () => {
+  if (temper1Skolz < 550 && temper1Skolz > 50) {
+    return 'Выход на режим';
+  } else if (temper1Skolz >= 550) {
+    return 'Установившийся режим';
+  } else {
+    return 'Печь не работает';
+  }
+};
+
+const mode = determineFurnaceMode();
   let alerts = [];
 
   if (mode === 'Печь не работает') {
