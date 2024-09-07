@@ -23,6 +23,7 @@ export const checkAndNotify = (data, bot, chatId, furnaceNumber, messageId) => {
   const razrezenieKotla = data[`Разрежение в пространстве котла утилизатора печь ВР${furnaceNumber}`];
   const razrezenieNizZagruz = data[`Разрежение низ загрузочной камеры печь ВР${furnaceNumber}`];
   const timeRecorded = data[`Время записи на сервер для печь ВР${furnaceNumber}`]; // Время записи на сервер
+  const formattedTimeRecorded = `${timeRecorded.slice(0, 10)} ${timeRecorded.slice(10)}`;
 
 
  // Определение режима работы печи
@@ -190,7 +191,7 @@ const mode = determineFurnaceMode();
     bot,
     chatId,
     messageId,
-    `Режим работы печи: ${mode}\nВремя записи на сервер: ${timeRecorded}\n\nАлармы:\n\n${alertMessage}\nПоследнее обновление: ${lastUpdated}`,
+    `Режим работы печи: ${mode}\nВремя записи на сервер: ${formattedTimeRecorded}\n\nАлармы:\n\n${alertMessage}\nПоследнее обновление: ${lastUpdated}`,
     buttons
   );
 };
