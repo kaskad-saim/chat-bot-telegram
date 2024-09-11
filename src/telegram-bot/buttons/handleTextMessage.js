@@ -44,6 +44,8 @@ export const handleTextMessage = async (bot, app, msg) => {
     // Определяем нужное меню
     const menu = furnaceNumber === 1 ? charts_archive_1 : charts_archive_2;
 
+    let loadingMessage; // Переменная для хранения сообщения "Загрузка графика"
+
     try {
       // Определяем нужную функцию для генерации графика
       let generateChartForDate;
@@ -67,7 +69,7 @@ export const handleTextMessage = async (bot, app, msg) => {
       console.log('Generating chart with:', generateChartForDate);
 
       // Отправляем сообщение "Загрузка графика"
-      const loadingMessage = await bot.sendMessage(chatId, 'Загрузка графика, пожалуйста подождите...');
+      loadingMessage = await bot.sendMessage(chatId, 'Загрузка графика, пожалуйста подождите...');
 
       const buffer = await generateChartForDate();
 
@@ -105,6 +107,11 @@ export const handleTextMessage = async (bot, app, msg) => {
       // Очищаем состояние
       delete app.locals.userStates[chatId];
     } catch (error) {
+      // Если ошибка произошла, удаляем сообщение "Загрузка графика", если оно было отправлено
+      if (loadingMessage) {
+        await bot.deleteMessage(chatId, loadingMessage.message_id);
+      }
+
       await bot.sendMessage(chatId, `Ошибка: нет данных за этот период, либо вы ввели некорректную дату. Пожалуйста, попробуйте еще раз или нажмите "Назад" для выхода.`, {
         reply_markup: {
           inline_keyboard: [
