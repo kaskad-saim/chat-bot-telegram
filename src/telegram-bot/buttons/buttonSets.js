@@ -3,20 +3,24 @@ export const getButtonsByAction = (action) => {
     furnace_1: [
       [
         { text: 'Текущие параметры', callback_data: 'get_temperature_1' },
-        { text: 'Графики', callback_data: 'charts_1' },
+        { text: 'Нотисы', callback_data: 'get_dose_notis_1' },
       ],
       [
+        { text: 'Графики', callback_data: 'charts_1' },
         { text: 'Архив графиков', callback_data: 'charts_archive_1' },
-        { text: 'Назад', callback_data: 'production_carbon' }
       ],
+      [{ text: 'Назад', callback_data: 'production_carbon' }],
     ],
     furnace_2: [
       [
         { text: 'Текущие параметры', callback_data: 'get_temperature_2' },
-        { text: 'Графики', callback_data: 'charts_2' },
+        { text: 'Нотисы', callback_data: 'get_dose_notis_2' },
       ],
-      [{ text: 'Архив графиков', callback_data: 'charts_archive_2' },
-        { text: 'Назад', callback_data: 'production_carbon' }],
+      [
+        { text: 'Графики', callback_data: 'charts_2' },
+        { text: 'Архив графиков', callback_data: 'charts_archive_2' },
+      ],
+      [{ text: 'Назад', callback_data: 'production_carbon' }],
     ],
     production_carbon: [
       [
@@ -31,8 +35,9 @@ export const getButtonsByAction = (action) => {
       ],
       [
         { text: 'Уровень', callback_data: 'chart_level_1' },
-        { text: 'Назад', callback_data: 'furnace_1' },
+        { text: 'Нотисы', callback_data: 'chart_dose_1' },
       ],
+      [{ text: 'Назад', callback_data: 'furnace_1' }],
     ],
     chart_temperature_1: [
       [
@@ -64,6 +69,16 @@ export const getButtonsByAction = (action) => {
         { text: 'Назад', callback_data: 'charts_1' },
       ],
     ],
+    chart_dose_1: [
+      [
+        { text: 'За 1 час', callback_data: 'chart_dose_1_Hour' },
+        { text: 'За 12 часов', callback_data: 'chart_dose_1_Twelve' },
+      ],
+      [
+        { text: 'За 24 часа', callback_data: 'chart_dose_1_Day' },
+        { text: 'Назад', callback_data: 'charts_1' },
+      ],
+    ],
     charts_2: [
       [
         { text: 'Температура', callback_data: 'chart_temperature_2' },
@@ -71,8 +86,9 @@ export const getButtonsByAction = (action) => {
       ],
       [
         { text: 'Уровень', callback_data: 'chart_level_2' },
-        { text: 'Назад', callback_data: 'furnace_2' },
+        { text: 'Нотисы', callback_data: 'chart_dose_2' },
       ],
+      [{ text: 'Назад', callback_data: 'furnace_2' }],
     ],
     chart_temperature_2: [
       [
@@ -104,6 +120,16 @@ export const getButtonsByAction = (action) => {
         { text: 'Назад', callback_data: 'charts_2' },
       ],
     ],
+    chart_dose_2: [
+      [
+        { text: 'За 1 час', callback_data: 'chart_dose_2_Hour' },
+        { text: 'За 12 часов', callback_data: 'chart_dose_2_Twelve' },
+      ],
+      [
+        { text: 'За 24 часа', callback_data: 'chart_dose_2_Day' },
+        { text: 'Назад', callback_data: 'charts_2' },
+      ],
+    ],
     charts_archive_1: [
       [
         { text: 'Температура', callback_data: 'archive_temperature_1' },
@@ -111,8 +137,9 @@ export const getButtonsByAction = (action) => {
       ],
       [
         { text: 'Уровень', callback_data: 'archive_level_1' },
-        { text: 'Назад', callback_data: 'furnace_1' },
+        { text: 'Нотисы', callback_data: 'archive_dose_1' },
       ],
+      [{ text: 'Назад', callback_data: 'furnace_1' }],
     ],
     charts_archive_2: [
       [
@@ -121,8 +148,9 @@ export const getButtonsByAction = (action) => {
       ],
       [
         { text: 'Уровень', callback_data: 'archive_level_2' },
-        { text: 'Назад', callback_data: 'furnace_2' },
+        { text: 'Нотисы', callback_data: 'archive_dose_2' },
       ],
+      [{ text: 'Назад', callback_data: 'furnace_2' }],
     ],
     back_to_production: [[{ text: 'Карбон', callback_data: 'production_carbon' }]],
     help: [[{ text: 'Назад', callback_data: 'back_to_main' }]],

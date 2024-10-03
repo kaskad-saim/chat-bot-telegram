@@ -2,8 +2,11 @@ import { getButtonsByAction } from '../buttons/buttonSets.js';
 import { handleChartGeneration } from '../buttons/chartHandlers.js';
 import { generateTablePechVr } from '../generates/pechVr/generatetable.js';
 import { checkAndNotify } from '../generates/pechVr/alarms.js';
-import { chartGenerators } from '../buttons/chartGenerators.js'; // Исправленный импорт
+import { chartGenerators } from '../buttons/chartGenerators.js';
 import { handleHelp } from '../commands/help.js';
+import { generateDoseTableNotis } from '../generates/notis/generateTable.js';
+import { NotisVR1, NotisVR2 } from '../../models/NotisModel.js';
+import { checkLoading, getLastValuesNotis } from '../../routes/updateValues.js';
 
 export const handleCallbackQuery = async (bot, app, query) => {
   const chatId = query.message.chat.id;
@@ -32,7 +35,6 @@ export const handleCallbackQuery = async (bot, app, query) => {
     } else if (action.startsWith('check_alarms_')) {
       const furnaceNumber = action.includes('1') ? 1 : 2;
       const data = app.locals.data;
-
       await checkAndNotify(data, bot, chatId, furnaceNumber, query.message.message_id);
     } else if (action.startsWith('archive_')) {
       let chartType;
@@ -47,28 +49,61 @@ export const handleCallbackQuery = async (bot, app, query) => {
       } else if (action.startsWith('archive_level_')) {
         chartType = 'уровня';
         chartTitle = `График уровня ${furnaceNumber === 1 ? '1' : '2'} за сутки`;
-      };
+      } else if (action.startsWith('archive_dose_')) {
+        // Добавляем обработку архивов дозы
+        chartType = 'Доза (Кг/час)';
+        chartTitle = `График Доза ВР${furnaceNumber} за сутки`;
+      }
       // Убедитесь, что userStates инициализирован
       app.locals.userStates = app.locals.userStates || {};
       // Запросите дату у пользователя
-      const requestDateMessage = await bot.sendMessage(chatId, `Введите дату в формате dd.mm.yyyy для графика ${chartType}.`);
+      const requestDateMessage = await bot.sendMessage(
+        chatId,
+        `Введите дату в формате dd.mm.yyyy для графика ${chartType}.`
+      );
       // Сохраните состояние запроса для последующей обработки
       app.locals.userStates[chatId] = {
         action: `${action}`,
         messageId: requestDateMessage.message_id,
         chartType,
-        furnaceNumber
+        furnaceNumber,
       };
-
     } else if (chartGenerators[action]) {
       await handleChartGeneration(bot, chatId, action);
     } else if (action === 'help') {
       await handleHelp(bot, chatId, query.message.message_id);
+    } else if (action.startsWith('get_dose_notis_')) {
+      const furnaceNumber = action.includes('1') ? 1 : 2;
+      const data = app.locals.data;
+
+      // Получаем последние 5 значений "Кг/час"
+      const lastFiveValues = await getLastValuesNotis(
+        furnaceNumber === 1 ? NotisVR1 : NotisVR2,
+        `Нотис ВР${furnaceNumber} Кг/час`
+      );
+
+      // Проверяем статус загрузки нотиса
+      const loadStatus = checkLoading(lastFiveValues);
+
+      // Генерация таблицы дозатора с учетом статуса работы
+      const doseTable = generateDoseTableNotis(data, furnaceNumber, loadStatus);
+
+      const buttonSet = [
+        [
+          { text: 'Обновить', callback_data: action },
+          { text: 'Назад', callback_data: `furnace_${furnaceNumber}` },
+        ],
+      ];
+      await bot.editMessageText(doseTable, {
+        chat_id: chatId,
+        message_id: query.message.message_id,
+        reply_markup: { inline_keyboard: buttonSet },
+      });
     } else {
       const actionMap = {
-        'furnace_1': 'Печи карбонизации №1',
-        'furnace_2': 'Печи карбонизации №2',
-        'back_to_main': 'Выберите интересующую опцию:',
+        furnace_1: 'Печи карбонизации №1',
+        furnace_2: 'Печи карбонизации №2',
+        back_to_main: 'Выберите интересующую опцию:',
       };
 
       const messageText = actionMap[action] || 'Выберите интересующую опцию:';

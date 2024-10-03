@@ -8,7 +8,6 @@ import { fetchData } from './routes/dataFetcher.js';
 import createTelegramBot from './telegram-bot/telegramBot.js';
 import fs from 'fs';
 
-
 const app = express();
 const PORT = config.PORT;
 
@@ -81,5 +80,6 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
   const timeStamp = new Date().toLocaleString();
+  // console.log(`[${timeStamp}] Server is running on http://169.254.7.86:${PORT}`);
   console.log(`[${timeStamp}] Server is running on http://169.254.0.167:${PORT}`);
 });

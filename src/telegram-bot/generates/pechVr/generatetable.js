@@ -94,8 +94,20 @@ export const generateTablePechVr = (data, furnaceNumber, currentTime) => {
   // Параметры разрежения
   const vacuums = [
     formatVacuum('В топке печи', `Разрежение в топке печи печь ВР${furnaceNumber}`, -4, -1, 'кгс/м2'),
-    formatVacuum('В котле утилизаторе', `Разрежение в пространстве котла утилизатора печь ВР${furnaceNumber}`, -12, -3, 'кгс/м2'),
-    formatVacuum('Низ загрузочной камеры', `Разрежение низ загрузочной камеры печь ВР${furnaceNumber}`, -5, -1, 'кгс/м2'),
+    formatVacuum(
+      'В котле утилизаторе',
+      `Разрежение в пространстве котла утилизатора печь ВР${furnaceNumber}`,
+      -12,
+      -3,
+      'кгс/м2'
+    ),
+    formatVacuum(
+      'Низ загрузочной камеры',
+      `Разрежение низ загрузочной камеры печь ВР${furnaceNumber}`,
+      -5,
+      -1,
+      'кгс/м2'
+    ),
   ];
 
   // Форматирование исполнительных механизмов
@@ -107,7 +119,7 @@ export const generateTablePechVr = (data, furnaceNumber, currentTime) => {
   };
 
   // Параметры исполнительных механизмов
-  const ims = [formatIm('Котла-утилизатора', `Исполнительный механизм котла ВР${furnaceNumber}`, '%')];
+  const ims = [formatIm('Котла-утилизатора', `Исполнительный механизм котла печь ВР${furnaceNumber}`, '%')];
 
   // Форматирование мощности горелки
   const formatGorelka = (label, key, unit) => {
@@ -117,13 +129,15 @@ export const generateTablePechVr = (data, furnaceNumber, currentTime) => {
     return `${symbol}${label}: ${value} ${unit}`;
   };
 
-// Параметры горелок
-const gorelki = [formatGorelka('Мощность горелки', `Мощность горелки ВР${furnaceNumber}`, '%')];
+  // Параметры горелок
+  const gorelki = [formatGorelka('Мощность горелки', `Мощность горелки печь ВР${furnaceNumber}`, '%')];
 
   // Объединение всех параметров в один массив
   const parameters = [
     `Режим работы печи: ${determineFurnaceMode()}`,
-    `Время записи на сервер: ${data[`Время записи на сервер для печь ВР${furnaceNumber}`].slice(0, 10)} ${data[`Время записи на сервер для печь ВР${furnaceNumber}`].slice(10)}`,
+    `Время записи на сервер: ${data[`Время записи на сервер для печь ВР${furnaceNumber}`].slice(0, 10)} ${data[
+      `Время записи на сервер для печь ВР${furnaceNumber}`
+    ].slice(10)}`,
     '',
     'Температуры:',
     ...temperatures,
