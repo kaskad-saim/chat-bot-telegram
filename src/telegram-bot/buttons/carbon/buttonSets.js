@@ -248,11 +248,12 @@ export const getButtonsByAction = (action) => {
       [{ text: 'Назад', callback_data: 'furnace_mpa3' }],
     ],
     back_to_production: [[{ text: 'Карбон', callback_data: 'production_carbon' },
-                          { text: 'Сизод', callback_data: 'production_sizod' }]],
+                          { text: 'Сизод', callback_data: 'production_sizod' }
+                        ]],
     back_to_main: [
       [
         { text: 'Карбон', callback_data: 'production_carbon' },
-        // { text: 'Сизод', callback_data: 'production_sizod'  },
+        { text: 'Сизод', callback_data: 'production_sizod'  },
       ],
     ],
   };
