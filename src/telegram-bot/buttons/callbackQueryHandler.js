@@ -14,13 +14,18 @@ export const handleCallbackQuery = async (bot, app, query) => {
     return;
   }
 
-  // Если действие связано с Карбоном (печи ВР, Notis, MPA)
-  if (action.startsWith('get_params_vr') || action.startsWith('check_alarms_') || action.startsWith('get_dose_notis_') || action.startsWith('get_params_mpa')) {
-    await handleCallbackQueryCarbon(bot, app, query);
-    return;
-  }
-
-  if (action.startsWith('chart_') || action.startsWith('archive_')) {
+  // Если действие связано с Карбоном
+  if (
+    action.startsWith('get_params_vr') ||
+    action.startsWith('check_alarms_') ||
+    action.startsWith('get_dose_notis_') ||
+    action.startsWith('get_params_mpa') ||
+    action.startsWith('chart_') ||
+    action.startsWith('archive_') ||
+    action.includes('sushilka') ||
+    action.includes('mill') ||
+    action.includes('reactor')
+  ) {
     await handleCallbackQueryCarbon(bot, app, query);
     return;
   }
@@ -32,6 +37,10 @@ export const handleCallbackQuery = async (bot, app, query) => {
       furnace_vr2: 'Печь карбонизации №2',
       furnace_mpa2: 'Печь МПА2',
       furnace_mpa3: 'Печь МПА3',
+      sushilka_1: 'Сушилка №1',
+      sushilka_2: 'Сушилка №2',
+      mill_k296: 'Мельницы к.296 и к.10б',
+      reactor_k296: 'Смоляные реактора к.296',
       back_to_main: 'Выберите интересующую опцию:',
     };
 
@@ -48,3 +57,4 @@ export const handleCallbackQuery = async (bot, app, query) => {
     await bot.sendMessage(chatId, 'Произошла ошибка при выполнении вашего запроса. Пожалуйста, попробуйте позже.');
   }
 };
+

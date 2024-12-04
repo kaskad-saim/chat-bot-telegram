@@ -41,6 +41,30 @@ import {
   generateLevel12HourChartVR1,
   generateLevel12HourChartVR2,
 } from '../../generates/pechVr/generateCharts.js';
+import {
+  generateTemperature24HourChartSushilka1,
+  generateTemperature24HourChartSushilka2,
+  generateTemperature12HourChartSushilka1,
+  generateTemperature12HourChartSushilka2,
+  generateTemperatureOneHourChartSushilka1,
+  generateTemperatureOneHourChartSushilka2,
+  generateVacuum24HourChartSushilka1,
+  generateVacuum24HourChartSushilka2,
+  generateVacuum12HourChartSushilka1,
+  generateVacuum12HourChartSushilka2,
+  generateVacuumOneHourChartSushilka1,
+  generateVacuumOneHourChartSushilka2,
+} from '../../generates/sushilka/generateCharts.js';
+
+import {
+  generateVibrationChartMill1,
+  generateVibrationChartMill2,
+  generateVibrationChartYGM9517,
+  generateVibrationChartSBM3,
+  generateVibrationChartYCVOK130,
+} from '../../generates/mill/generateCharts.js';
+
+import { generateLevelChartReactorK296, generateTemperatureChartReactorK296 } from '../../generates/reactor/generateCharts.js';
 
 export const chartGenerators = {
   // Для ВР1
@@ -86,6 +110,26 @@ export const chartGenerators = {
   chart_pressure_mpa3_Day: (params) => generatePressure24HourChartMPA3(params),
   chart_pressure_mpa3_Twelve: (params) => generatePressure12HourChartMPA3(params),
   chart_pressure_mpa3_Hour: (params) => generatePressureOneHourChartMPA3(params),
+
+  // Температура Сушилка 1
+  chart_temperature_sushilka1_Hour: (params) => generateTemperatureOneHourChartSushilka1(params),
+  chart_temperature_sushilka1_Twelve: (params) => generateTemperature12HourChartSushilka1(params),
+  chart_temperature_sushilka1_Day: (params) => generateTemperature24HourChartSushilka1(params),
+
+  // Давление/разрежение Сушилка 1
+  chart_pressure_sushilka1_Hour: (params) => generateVacuumOneHourChartSushilka1(params),
+  chart_pressure_sushilka1_Twelve: (params) => generateVacuum12HourChartSushilka1(params),
+  chart_pressure_sushilka1_Day: (params) => generateVacuum24HourChartSushilka1(params),
+
+  // Температура Сушилка 2
+  chart_temperature_sushilka2_Hour: (params) => generateTemperatureOneHourChartSushilka2(params),
+  chart_temperature_sushilka2_Twelve: (params) => generateTemperature12HourChartSushilka2(params),
+  chart_temperature_sushilka2_Day: (params) => generateTemperature24HourChartSushilka2(params),
+
+  // Давление/разрежение Сушилка 2
+  chart_pressure_sushilka2_Hour: (params) => generateVacuumOneHourChartSushilka2(params),
+  chart_pressure_sushilka2_Twelve: (params) => generateVacuum12HourChartSushilka2(params),
+  chart_pressure_sushilka2_Day: (params) => generateVacuum24HourChartSushilka2(params),
 };
 
 chartGenerators['chart_dose_vr1_Day'] = (params) => generateDose24HourChartVR1(params);
@@ -98,3 +142,13 @@ chartGenerators['chart_dose_vr2_Hour'] = (params) => generateDoseOneHourChartVR2
 
 chartGenerators['archive_dose_vr1'] = (params) => generateDoseChartArchiveVR1(params);
 chartGenerators['archive_dose_vr2'] = (params) => generateDoseChartArchiveVR2(params);
+
+chartGenerators['chart_vibration_mill1'] = (params) => generateVibrationChartMill1(params);
+chartGenerators['chart_vibration_mill2'] = (params) => generateVibrationChartMill2(params);
+
+chartGenerators['chart_vibration_ygm9517'] = (params) => generateVibrationChartYGM9517(params);
+chartGenerators['chart_vibration_sbm3'] = (params) => generateVibrationChartSBM3(params);
+chartGenerators['chart_vibration_ycvok130'] = (params) => generateVibrationChartYCVOK130(params);
+
+chartGenerators['chart_temperature_reactor'] = (params) => generateTemperatureChartReactorK296(params);
+chartGenerators['chart_level_reactor'] = (params) => generateLevelChartReactorK296 (params);

@@ -9,6 +9,14 @@ export const getButtonsByAction = (action) => {
         { text: 'МПА 2', callback_data: 'furnace_mpa2' },
         { text: 'МПА 3', callback_data: 'furnace_mpa3' },
       ],
+      // [
+      //   { text: 'Сушилка 1', callback_data: 'sushilka_1' },
+      //   { text: 'Сушилка 2', callback_data: 'sushilka_2' },
+      // ],
+      // [
+      //   {text: 'Мельницы', callback_data: 'mill_k296'},
+      //   {text: 'Смоляные реактора', callback_data: 'reactor_k296'}
+      // ],
       [
         { text: 'Назад', callback_data: 'back_to_main' },
       ]
@@ -246,6 +254,172 @@ export const getButtonsByAction = (action) => {
         { text: 'Давление/разрежение', callback_data: 'archive_pressure_mpa3' },
       ],
       [{ text: 'Назад', callback_data: 'furnace_mpa3' }],
+    ],
+    sushilka_1: [
+      [
+        { text: 'Текущие параметры', callback_data: 'get_params_sushilka1' },
+        { text: 'Графики', callback_data: 'charts_sushilka1' },
+      ],
+      [
+        { text: 'Архивы графиков', callback_data: 'charts_archive_sushilka1' },
+        { text: 'Назад', callback_data: 'production_carbon' },
+      ],
+    ],
+    charts_sushilka1: [
+      [
+        { text: 'Температура', callback_data: 'chart_temperature_sushilka1' },
+        { text: 'Давление/разрежение', callback_data: 'chart_pressure_sushilka1' },
+      ],
+      [{ text: 'Назад', callback_data: 'sushilka_1' }],
+    ],
+    chart_temperature_sushilka1: [
+      [
+        { text: 'За 1 час', callback_data: 'chart_temperature_sushilka1_Hour' },
+        { text: 'За 12 часов', callback_data: 'chart_temperature_sushilka1_Twelve' },
+      ],
+      [
+        { text: 'За 24 часа', callback_data: 'chart_temperature_sushilka1_Day' },
+        { text: 'Назад', callback_data: 'charts_sushilka1' },
+      ],
+    ],
+    chart_pressure_sushilka1: [
+      [
+        { text: 'За 1 час', callback_data: 'chart_pressure_sushilka1_Hour' },
+        { text: 'За 12 часов', callback_data: 'chart_pressure_sushilka1_Twelve' },
+      ],
+      [
+        { text: 'За 24 часа', callback_data: 'chart_pressure_sushilka1_Day' },
+        { text: 'Назад', callback_data: 'charts_sushilka1' },
+      ],
+    ],
+    charts_archive_sushilka1: [
+      [
+        { text: 'Температура', callback_data: 'archive_temperature_sushilka1' },
+        { text: 'Давление/разрежение', callback_data: 'archive_pressure_sushilka1' },
+      ],
+      [{ text: 'Назад', callback_data: 'sushilka_1' }],
+    ],
+    sushilka_2: [
+      [
+        { text: 'Текущие параметры', callback_data: 'get_params_sushilka2' },
+        { text: 'Графики', callback_data: 'charts_sushilka2' },
+      ],
+      [
+        { text: 'Архивы графиков', callback_data: 'charts_archive_sushilka2' },
+        { text: 'Назад', callback_data: 'production_carbon' },
+      ],
+    ],
+    charts_sushilka2: [
+      [
+        { text: 'Температура', callback_data: 'chart_temperature_sushilka2' },
+        { text: 'Давление/разрежение', callback_data: 'chart_pressure_sushilka2' },
+      ],
+      [{ text: 'Назад', callback_data: 'sushilka_2' }],
+    ],
+    chart_temperature_sushilka2: [
+      [
+        { text: 'За 1 час', callback_data: 'chart_temperature_sushilka2_Hour' },
+        { text: 'За 12 часов', callback_data: 'chart_temperature_sushilka2_Twelve' },
+      ],
+      [
+        { text: 'За 24 часа', callback_data: 'chart_temperature_sushilka2_Day' },
+        { text: 'Назад', callback_data: 'charts_sushilka2' },
+      ],
+    ],
+    chart_pressure_sushilka2: [
+      [
+        { text: 'За 1 час', callback_data: 'chart_pressure_sushilka2_Hour' },
+        { text: 'За 12 часов', callback_data: 'chart_pressure_sushilka2_Twelve' },
+      ],
+      [
+        { text: 'За 24 часа', callback_data: 'chart_pressure_sushilka2_Day' },
+        { text: 'Назад', callback_data: 'charts_sushilka2' },
+      ],
+    ],
+    charts_archive_sushilka2: [
+      [
+        { text: 'Температура', callback_data: 'archive_temperature_sushilka2' },
+        { text: 'Давление/разрежение', callback_data: 'archive_pressure_sushilka2' },
+      ],
+      [{ text: 'Назад', callback_data: 'sushilka_2' }],
+    ],
+    mill_k296: [
+      [
+        { text: 'Текущие параметры', callback_data: 'get_params_mill' },
+        { text: 'Графики', callback_data: 'charts_mill' },
+      ],
+      [
+        { text: 'Архивы графиков', callback_data: 'charts_archive_mill' },
+        { text: 'Назад', callback_data: 'production_carbon' },
+      ],
+    ],
+    charts_mill: [
+      [
+        { text: 'Вибрация Мельницы №1', callback_data: 'chart_vibration_mill1' },
+        { text: 'Вибрация Мельницы №2', callback_data: 'chart_vibration_mill2' },
+      ],
+      [
+        { text: 'Вибрация Мельниц к.10б', callback_data: 'charts_mill10b' },
+        { text: 'Назад', callback_data: 'mill_k296' },
+      ],
+    ],
+    charts_mill10b: [
+      [
+        { text: 'Вибрация ШБМ №3', callback_data: 'chart_vibration_sbm3' },
+        { text: 'Вибрация YGM-9517', callback_data: 'chart_vibration_ygm9517' },
+      ],
+      [
+        { text: 'Вибрация YCVOK-130', callback_data: 'chart_vibration_ycvok130' },
+        { text: 'Назад', callback_data: 'charts_mill' },
+      ],
+    ],    
+    charts_archive_mill: [
+      [
+        {text: 'Вибрация Мельницы №1', callback_data: 'archive_vibration_mill1'},
+        {text: 'Вибрация Мельницы №2', callback_data: 'archive_vibration_mill2'}
+      ],
+      [
+        {text: 'Вибрация Мельниц к.10б', callback_data: 'charts_archive_mill10b'},
+        { text: 'Назад', callback_data: 'mill_k296' },
+      ]
+    ],
+    charts_archive_mill10b: [
+      [
+        {text: 'Вибрация ШБМ №3', callback_data: 'archive_vibration_sbm3'},
+        {text: 'Вибрация YGM-9517', callback_data: 'archive_vibration_ygm9517'}
+      ],
+      [
+        {text: 'Вибрация YCVOK-130', callback_data: 'archive_vibration_ycvok130'},
+        { text: 'Назад', callback_data: 'charts_archive_mill' },
+      ]
+    ],
+    reactor_k296: [
+      [
+        { text: 'Текущие параметры', callback_data: 'get_params_reactor' },
+        { text: 'Графики', callback_data: 'charts_reactor' },
+      ],
+      [
+        { text: 'Архивы графиков', callback_data: 'charts_archive_reactor' },
+        { text: 'Назад', callback_data: 'production_carbon' },
+      ],
+    ],
+    charts_reactor: [
+      [
+        {text: 'Температура', callback_data: 'chart_temperature_reactor'},
+        {text: 'Уровень', callback_data: 'chart_level_reactor'}
+      ],
+      [
+        {text: 'Назад', callback_data: 'reactor_k296'},
+      ]
+    ],
+    charts_archive_reactor: [
+      [
+        {text: 'Температура', callback_data: 'archive_temperature_reactor'},
+        {text: 'Уровень', callback_data: 'archive_level_reactor'}
+      ],
+      [
+        {text: 'Назад', callback_data: 'reactor_k296'},
+      ]
     ],
     back_to_production: [[{ text: 'Карбон', callback_data: 'production_carbon' },
                           { text: 'Сизод', callback_data: 'production_sizod' }

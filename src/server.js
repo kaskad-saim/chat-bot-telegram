@@ -4,7 +4,9 @@ import { fileURLToPath } from 'url';
 import mongoose from 'mongoose';
 import { config } from './config/config.js';
 import { updateValuesRoute } from './routes/updateValues.js';
-import { fetchData, fetchDataVR } from './routes/dataFetcher.js';
+import { fetchData, fetchDataVR, fetchDataSushka } from './routes/carbon/dataFetcher.js';
+import { fetchDataMPA } from './routes/carbon/dataFetcherMpa.js';
+import { fetchDataMill, fetchDataReactorK296 } from './routes/carbon/dataFetcherK296.js';
 import { fetchDataSizod } from './routes/dataFetcherSizod.js';
 import createTelegramBot from './telegram-bot/telegramBot.js';
 import fs from 'fs';
@@ -73,7 +75,11 @@ updateValuesRoute(app);
 
 fetchData();
 fetchDataVR();
+fetchDataSushka();
 fetchDataSizod();
+fetchDataMill();
+fetchDataReactorK296();
+fetchDataMPA();
 
 // Обработка ошибок маршрутов и других middleware
 app.use((err, req, res, next) => {
@@ -83,6 +89,6 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
   const timeStamp = new Date().toLocaleString();
-  // console.log(`[${timeStamp}] Server is running on http://169.254.7.86:${PORT}`);
+  // console.log(`[${timeStamp}] Server is running on http://169.254.6.19:${PORT}`);
   console.log(`[${timeStamp}] Server is running on http://169.254.0.167:${PORT}`);
 });

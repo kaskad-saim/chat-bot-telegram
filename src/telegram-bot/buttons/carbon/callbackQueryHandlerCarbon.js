@@ -4,11 +4,17 @@ import { generateDoseTableNotis } from '../../generates/notis/generateTable.js';
 import { NotisVR1, NotisVR2 } from '../../../models/NotisModel.js';
 import { checkLoading, getLastValuesNotis } from '../../../routes/updateValues.js';
 import { generateTableMpa } from '../../generates/pechiMPA/generatetable.js';
+import { FurnaceMPA2, FurnaceMPA3 } from '../../../models/FurnanceMPAModel.js';
 import { handleChartGeneration } from './chartHandlers.js';
 import { chartGenerators } from './chartGenerators.js';
 import { getButtonsByAction } from './buttonSets.js';
 import { FurnaceVR1, FurnaceVR2 } from '../../../models/FurnanceModel.js';
-
+import { generateTableSushilka } from '../../generates/sushilka/generatetable.js';
+import { Sushilka1, Sushilka2 } from '../../../models/SushilkaModel.js';
+import { generateTableMill } from '../../generates/mill/generatetable.js';
+import { Mill1, Mill2, Mill10b } from '../../../models/MillModel.js';
+import { ReactorK296 } from '../../../models/ReactorModel.js';
+import { generateTableReactor } from '../../generates/reactor/generatetable.js';
 
 export const handleCallbackQueryCarbon = async (bot, app, query) => {
   const chatId = query.message.chat.id;
@@ -59,8 +65,7 @@ export const handleCallbackQueryCarbon = async (bot, app, query) => {
 
       // Передаем данные в функцию checkAndNotify
       await checkAndNotify(data, bot, chatId, furnaceNumber, query.message.message_id);
-    }
-     else if (action.startsWith('archive_')) {
+    } else if (action.startsWith('archive_')) {
       let chartType;
       let chartTitle;
       const furnaceNumber = action.includes('vr1') ? 1 : 2;
@@ -76,6 +81,9 @@ export const handleCallbackQueryCarbon = async (bot, app, query) => {
         chartTitle = `График уровня печи карбонизации №${furnaceNumber} за сутки`;
       } else if (action.startsWith('archive_dose_')) {
         chartType = 'Доза (Кг/час)';
+        chartTitle = `График дозы печи карбонизации №${furnaceNumber} за сутки`;
+      } else if (action.startsWith('archive_vibration_')) {
+        chartType = 'вибрации';
         chartTitle = `График дозы печи карбонизации №${furnaceNumber} за сутки`;
       }
 
@@ -123,7 +131,17 @@ export const handleCallbackQueryCarbon = async (bot, app, query) => {
     } else if (action.startsWith('get_params_mpa2') || action.startsWith('get_params_mpa3')) {
       const mpaNumber = action.includes('mpa2') ? 2 : 3;
       const currentTime = new Date().toLocaleString();
-      const data = app.locals.data;
+      
+      // Получаем модель данных МПА из базы данных
+      const mpaModel = mpaNumber === 2 ? FurnaceMPA2 : FurnaceMPA3;
+      const mpaDocument = await mpaModel.findOne().sort({ timestamp: -1 }); // Последняя запись
+
+      if (!mpaDocument || !mpaDocument.data) {
+        await bot.sendMessage(chatId, `Данные для МПА ${mpaNumber} не найдены. Попробуйте позже.`);
+        return;
+      }
+
+      const data = Object.fromEntries(mpaDocument.data); // Преобразуем данные из базы в объект
 
       // Генерация таблицы для печей МПА2 и МПА3
       const table = generateTableMpa(data, mpaNumber, currentTime);
@@ -141,12 +159,153 @@ export const handleCallbackQueryCarbon = async (bot, app, query) => {
         message_id: query.message.message_id,
         reply_markup: { inline_keyboard: buttonSet },
       });
-    } else {
+    } 
+    else if (action.startsWith('get_params_sushilka')) {
+      const sushilkaNumber = action.includes('sushilka1') ? 1 : 2; // Определяем номер сушилки
+      const currentTime = new Date().toLocaleString();
+
+      // Получаем модель данных сушилки из базы данных
+      const sushilkaModel = sushilkaNumber === 1 ? Sushilka1 : Sushilka2;
+      const sushilkaDocument = await sushilkaModel.findOne().sort({ timestamp: -1 }); // Последняя запись
+
+      if (!sushilkaDocument || !sushilkaDocument.data) {
+        await bot.sendMessage(chatId, `Данные для Сушилки ${sushilkaNumber} не найдены. Попробуйте позже.`);
+        return;
+      }
+
+      const data = Object.fromEntries(sushilkaDocument.data); // Преобразуем данные из базы в объект
+
+      // Генерация таблицы
+      const table = generateTableSushilka(data, sushilkaNumber, currentTime);
+      const buttonSet = [
+        [
+          { text: 'Обновить', callback_data: action },
+          { text: 'Назад', callback_data: `sushilka_${sushilkaNumber}` },
+        ],
+      ];
+
+      // Отправляем обновлённое сообщение
+      await bot.editMessageText(table, {
+        chat_id: chatId,
+        message_id: query.message.message_id,
+        reply_markup: { inline_keyboard: buttonSet },
+      });
+    } else if (action.startsWith('get_params_reactor')) {
+      const currentTime = new Date().toLocaleString();
+
+      // Получаем модель данных сушилки из базы данных
+      
+      const reactorDocument = await ReactorK296.findOne().sort({ timestamp: -1 }); // Последняя запись
+
+      if (!reactorDocument || !reactorDocument.data) {
+        await bot.sendMessage(chatId, `Данные для Смоляных реакторов не найдены. Попробуйте позже.`);
+        return;
+      }
+
+      const data = Object.fromEntries(reactorDocument.data); // Преобразуем данные из базы в объект
+
+      // Генерация таблицы
+      const table = generateTableReactor(data, currentTime);
+      const buttonSet = [
+        [
+          { text: 'Обновить', callback_data: action },
+          { text: 'Назад', callback_data: `reactor_k296` },
+        ],
+      ];
+      // Отправляем обновлённое сообщение
+      await bot.editMessageText(table, {
+        chat_id: chatId,
+        message_id: query.message.message_id,
+        reply_markup: { inline_keyboard: buttonSet },
+      });
+    } 
+    else if (action.startsWith('get_params_mill')) {
+      const currentTime = new Date().toLocaleString();
+    
+      // Получаем данные из всех моделей
+      const [mill1Documents, mill2Documents, mill10bDocuments] = await Promise.all([
+        Mill1.find().sort({ timestamp: -1 }),
+        Mill2.find().sort({ timestamp: -1 }),
+        Mill10b.find().sort({ timestamp: -1 }),
+      ]);
+      
+      const dataAllMills = {};
+      
+      // Обработка Mill1
+      const lastMill1 = mill1Documents[0];
+      if (lastMill1) {
+        dataAllMills['Мельница №1 (к.296)'] = Object.fromEntries(lastMill1.data);
+      }
+      
+      // Обработка Mill2
+      const lastMill2 = mill2Documents[0];
+      if (lastMill2) {
+        dataAllMills['Мельница №2 (к.296)'] = Object.fromEntries(lastMill2.data);
+      }
+    
+      // Обработка Mill10b (все параметры в одном документе)
+      const mill10bConfig = {
+        'Мельница YGM-9517 (к.10б)': [
+          'Фронтальная вибрация YGM-9517',
+          'Поперечная вибрация YGM-9517',
+          'Осевая вибрация YGM-9517',
+        ],
+        'Мельница ШБМ №3 (к.10б)': [
+          'Вертикальная вибрация ШБМ3',
+          'Поперечная вибрация ШБМ3',
+          'Осевая вибрация ШБМ3',
+        ],
+        'Мельница YCVOK-130 (к.10б)': [
+          'Фронтальная вибрация YCVOK-130',
+          'Поперечная вибрация YCVOK-130',
+          'Осевая вибрация YCVOK-130',
+        ],
+        
+      }; 
+      
+      // Обработка Mill10b
+      const lastMill10b = mill10bDocuments[0];
+        if (lastMill10b) {
+          const mill10bData = Object.fromEntries(lastMill10b.data);
+        
+          Object.keys(mill10bConfig).forEach((millName) => {
+            const parameters = mill10bConfig[millName];
+            dataAllMills[millName] = {};
+            parameters.forEach((param) => {
+              dataAllMills[millName][param] =
+                mill10bData[param] !== undefined ? mill10bData[param] : 'Нет данных';
+            });
+          });
+      }
+ 
+      
+    
+      // Генерация таблицы
+      const table = generateTableMill(dataAllMills, currentTime);
+      const buttonSet = [
+        [
+          { text: 'Обновить', callback_data: action },
+          { text: 'Назад', callback_data: 'mill_k296' },
+        ],
+      ];
+    
+      // Отправляем обновлённое сообщение
+      await bot.editMessageText(table, {
+        chat_id: chatId,
+        message_id: query.message.message_id,
+        reply_markup: { inline_keyboard: buttonSet },
+      });
+    }
+    else {
       const actionMap = {
         furnace_vr1: 'Печь карбонизации №1',
         furnace_vr2: 'Печь карбонизации №2',
         furnace_mpa2: 'Печь МПА2',
         furnace_mpa3: 'Печь МПА3',
+        sushilka_1: 'Сушилка №1',
+        sushilka_2: 'Сушилка №2',
+        mill_k296: 'Мельницы к.296 и к.10б',
+        reactor_k296: 'Смоляные реактора к.296',
         back_to_main: 'Выберите интересующую опцию:',
       };
 

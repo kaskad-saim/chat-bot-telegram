@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 
-const furnaceMPASchema = new mongoose.Schema(
+const millSchema = new mongoose.Schema(
   {
     data: {
       type: Map,
@@ -15,5 +15,4 @@ const furnaceMPASchema = new mongoose.Schema(
   { versionKey: false }
 ); // Отключаем поле __v
 
-export const FurnaceMPA2 = mongoose.model('FurnaceMPA2', furnaceMPASchema);
-export const FurnaceMPA3 = mongoose.model('FurnaceMPA3', furnaceMPASchema);
+export const ReactorK296 = mongoose.model('ReactorK296', millSchema, 'ReactorK296');
