@@ -1,12 +1,19 @@
 import { getButtonsByAction } from './carbon/buttonSets.js';
 import { handleCallbackQuerySizod } from './sizod/callbackQueryHandlerSizod.js';
-import { handleCallbackQueryCarbon } from './carbon/callbackQueryHandlerCarbon.js'; // Новый обработчик карбона
+import { handleCallbackQueryCarbon } from './carbon/callbackQueryHandlerCarbon.js';
+import { handleCallbackQueryUtvh } from './utvh/callbackQueryHandlerUtvh.js';
 
 export const handleCallbackQuery = async (bot, app, query) => {
   const chatId = query.message.chat.id;
   const action = query.data;
 
   await bot.answerCallbackQuery(query.id);
+
+  // Если действие связано с УТВХ
+  if (action.startsWith('utvh_') || action.includes('utvh')) {
+    await handleCallbackQueryUtvh(bot, app, query);
+    return;
+  }
 
   // Если действие связано с Сизод
   if (action.startsWith('sizod_') || action.includes('sizod')) {
@@ -24,7 +31,8 @@ export const handleCallbackQuery = async (bot, app, query) => {
     action.startsWith('archive_') ||
     action.includes('sushilka') ||
     action.includes('mill') ||
-    action.includes('reactor')
+    action.includes('reactor') ||
+    action.includes('energy_resources_carbon')
   ) {
     await handleCallbackQueryCarbon(bot, app, query);
     return;
@@ -41,6 +49,7 @@ export const handleCallbackQuery = async (bot, app, query) => {
       sushilka_2: 'Сушилка №2',
       mill_k296: 'Мельницы к.296 и к.10б',
       reactor_k296: 'Смоляные реактора к.296',
+      energy_resources_carbon: 'Энергоресурсы карбон',
       back_to_main: 'Выберите интересующую опцию:',
     };
 
@@ -57,4 +66,3 @@ export const handleCallbackQuery = async (bot, app, query) => {
     await bot.sendMessage(chatId, 'Произошла ошибка при выполнении вашего запроса. Пожалуйста, попробуйте позже.');
   }
 };
-
