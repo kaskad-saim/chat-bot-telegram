@@ -10,7 +10,7 @@ import { fetchDataSizod } from './routes/dataFetcherSizod.js';
 import createTelegramBot from './telegram-bot/telegramBot.js';
 import fs from 'fs';
 import { fetchDataUzliUcheta } from './routes/carbon/dataFetcherEnergyResources.js';
-// import { fetchDataKotels } from './routes/utvh/dataFetcherKotli.js';
+import { fetchDataKotels } from './routes/utvh/dataFetcherKotli.js';
 
 const app = express();
 const PORT = config.PORT;
@@ -79,7 +79,7 @@ fetchDataMill();
 fetchDataReactorK296();
 fetchDataMPA();
 fetchDataUzliUcheta();
-// fetchDataKotels();
+fetchDataKotels();
 
 // Обработка ошибок маршрутов и других middleware
 app.use((err, req, res, next) => {

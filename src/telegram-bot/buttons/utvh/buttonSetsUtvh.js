@@ -3,9 +3,14 @@ export const getButtonsByActionUtvh = (action) => {
     production_utvh: [
       [
         { text: 'Котел №1', callback_data: 'utvh_kotel_1' },
-        { text: 'Котел №2', callback_data: 'utvh_kotel_2' },
+        { text: 'Котел №2', callback_data: 'utvh_kotel_2' }
+      ],
+      [
         { text: 'Котел №3', callback_data: 'utvh_kotel_3' },
       ],
+      // [
+      //   { text: 'ХВО', callback_data: 'utvh_kotel_3' },
+      // ],
       [
         { text: 'Назад', callback_data: 'back_to_main' },
       ],
@@ -151,9 +156,8 @@ export const getButtonsByActionUtvh = (action) => {
     back_to_main: [
       [
         { text: 'Карбон', callback_data: 'production_carbon' },
-        { text: 'Сизод', callback_data: 'production_sizod' },
+        { text: 'УТВХ', callback_data: 'production_utvh' },
       ],
-      [{ text: 'УТВХ', callback_data: 'production_utvh' }],
     ],
   };
 

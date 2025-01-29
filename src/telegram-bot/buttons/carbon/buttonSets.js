@@ -354,41 +354,45 @@ export const getButtonsByAction = (action) => {
     ],
     charts_mill: [
       [
-        { text: 'Вибрация Мельницы №1', callback_data: 'chart_vibration_mill1' },
-        { text: 'Вибрация Мельницы №2', callback_data: 'chart_vibration_mill2' },
+        { text: 'Мельница №1', callback_data: 'chart_vibration_mill1' },
+        { text: 'Мельница №2', callback_data: 'chart_vibration_mill2' },
       ],
       [
-        { text: 'Вибрация Мельниц к.10б', callback_data: 'charts_mill10b' },
+        { text: 'Мельницы к.10б', callback_data: 'charts_mill10b' }
+      ],
+      [
         { text: 'Назад', callback_data: 'mill_k296' },
       ],
     ],
     charts_mill10b: [
       [
-        { text: 'Вибрация ШБМ №3', callback_data: 'chart_vibration_sbm3' },
-        { text: 'Вибрация YGM-9517', callback_data: 'chart_vibration_ygm9517' },
+        { text: 'ШБМ №3', callback_data: 'chart_vibration_sbm3' },
+        { text: 'YGM-9517', callback_data: 'chart_vibration_ygm9517' },
       ],
       [
-        { text: 'Вибрация YCVOK-130', callback_data: 'chart_vibration_ycvok130' },
+        { text: 'YCVOK-130', callback_data: 'chart_vibration_ycvok130' },
         { text: 'Назад', callback_data: 'charts_mill' },
       ],
     ],
     charts_archive_mill: [
       [
-        { text: 'Вибрация Мельницы №1', callback_data: 'archive_vibration_mill1' },
-        { text: 'Вибрация Мельницы №2', callback_data: 'archive_vibration_mill2' },
+        { text: 'Мельница №1', callback_data: 'archive_vibration_mill1' },
+        { text: 'Мельница №2', callback_data: 'archive_vibration_mill2' },
       ],
       [
-        { text: 'Вибрация Мельниц к.10б', callback_data: 'charts_archive_mill10b' },
+        { text: 'Мельницы к.10б', callback_data: 'charts_archive_mill10b' }
+      ],
+      [
         { text: 'Назад', callback_data: 'mill_k296' },
       ],
     ],
     charts_archive_mill10b: [
       [
-        { text: 'Вибрация ШБМ №3', callback_data: 'archive_vibration_sbm3' },
-        { text: 'Вибрация YGM-9517', callback_data: 'archive_vibration_ygm9517' },
+        { text: 'ШБМ №3', callback_data: 'archive_vibration_sbm3' },
+        { text: 'YGM-9517', callback_data: 'archive_vibration_ygm9517' },
       ],
       [
-        { text: 'Вибрация YCVOK-130', callback_data: 'archive_vibration_ycvok130' },
+        { text: 'YCVOK-130', callback_data: 'archive_vibration_ycvok130' },
         { text: 'Назад', callback_data: 'charts_archive_mill' },
       ],
     ],
@@ -443,16 +447,15 @@ export const getButtonsByAction = (action) => {
     back_to_production: [
       [
         { text: 'Карбон', callback_data: 'production_carbon' },
+        { text: 'УТВХ', callback_data: 'production_utvh' },
         // { text: 'Сизод', callback_data: 'production_sizod' },
       ],
-      [
-        // { text: 'УТВХ', callback_data: 'production_utvh' },
-      ]
+
     ],
     back_to_main: [
       [
         { text: 'Карбон', callback_data: 'production_carbon' },
-        // { text: 'УТВХ', callback_data: 'production_utvh' },
+        { text: 'УТВХ', callback_data: 'production_utvh' },
         // { text: 'Сизод', callback_data: 'production_sizod' },
       ],
     ],

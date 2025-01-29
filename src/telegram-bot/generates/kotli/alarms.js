@@ -27,10 +27,25 @@ export const checkAlarms = (alarmsData, kotelNumber, currentTime) => {
     'Останов по команде',
   ];
 
+  // Проверяем, есть ли данные в разделе alarms
+  const isNoData = Object.keys(alarmsSection).length === 0 || Object.values(alarmsSection).every(val => val === '—' || val === null || val === undefined);
+
+  if (isNoData) {
+    return `❓ Нет связи с объектом Котел №${kotelNumber}.\n\nВремя записи на сервер: ${cleanAlarmsData.lastUpdated || 'Нет данных'}\n\nПоследнее обновление: ${new Date().toLocaleString()}`;
+  }
+
   // Проверяем каждый аварийный сигнал
   alarmKeys.forEach(key => {
     const fullKey = `${key} котел №${kotelNumber}`; // Формируем полный ключ
-    if (alarmsSection[fullKey] === true) {
+    const alarmValue = alarmsSection[fullKey];
+
+    // Если значение прочерк или отсутствует, пропускаем
+    if (alarmValue === '—' || alarmValue === null || alarmValue === undefined) {
+      return;
+    }
+
+    // Если авария активна (true), добавляем в список
+    if (alarmValue === true) {
       triggeredAlarms.push(`❌ ${key}`); // Добавляем только название параметра
     }
   });
