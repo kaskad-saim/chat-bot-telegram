@@ -62,7 +62,7 @@ export const generateTableUtvhKotel = (data, kotelNumber, currentTime) => {
 
   // Другие параметры
   const others = [
-    formatData('Задание на уровень', `Задание на уровень котел №${kotelNumber}`, 'мм', false, 'others'),
+    formatData('Задание на уровень', `Задание на уровень котел №${kotelNumber}`, '%', false, 'others'),
   ];
 
   // Получение времени записи на сервер
