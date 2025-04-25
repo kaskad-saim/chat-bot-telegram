@@ -3,11 +3,11 @@ export const getButtonsByActionUtvh = (action) => {
     production_utvh: [
       [
         { text: 'Котел №1', callback_data: 'utvh_kotel_1' },
-        { text: 'Котел №2', callback_data: 'utvh_kotel_2' }
+        { text: 'Котел №2', callback_data: 'utvh_kotel_2' },
       ],
-      // [
-      //   { text: 'Котел №3', callback_data: 'utvh_kotel_3' },
-      // ],
+      [
+        { text: 'Котел №3', callback_data: 'utvh_kotel_3' },
+      ],
       // [
       //   { text: 'ХВО', callback_data: 'utvh_kotel_3' },
       // ],
@@ -51,21 +51,21 @@ export const getButtonsByActionUtvh = (action) => {
     utvh_kotel_1_charts: [
       [
         { text: 'Уровень', callback_data: 'utvh_kotel_1_level' },
-        { text: 'Давление', callback_data: 'utvh_kotel_1_pressure' },
+        { text: 'Давление пара', callback_data: 'utvh_kotel_1_pressure' },
       ],
       [{ text: 'Назад', callback_data: 'utvh_kotel_1' }],
     ],
     utvh_kotel_2_charts: [
       [
         { text: 'Уровень', callback_data: 'utvh_kotel_2_level' },
-        { text: 'Давление', callback_data: 'utvh_kotel_2_pressure' },
+        { text: 'Давление пара', callback_data: 'utvh_kotel_2_pressure' },
       ],
       [{ text: 'Назад', callback_data: 'utvh_kotel_2' }],
     ],
     utvh_kotel_3_charts: [
       [
         { text: 'Уровень', callback_data: 'utvh_kotel_3_level' },
-        { text: 'Давление', callback_data: 'utvh_kotel_3_pressure' },
+        { text: 'Давление пара', callback_data: 'utvh_kotel_3_pressure' },
       ],
       [{ text: 'Назад', callback_data: 'utvh_kotel_3' }],
     ],
@@ -132,7 +132,7 @@ export const getButtonsByActionUtvh = (action) => {
     utvh_archive_kotel_1: [
       [
         { text: 'Уровень', callback_data: 'utvh_archive_level_kotel_1' },
-        { text: 'Давление', callback_data: 'utvh_archive_par_kotel_1' },
+        { text: 'Давление пара', callback_data: 'utvh_archive_par_kotel_1' },
       ],
       [{ text: 'Назад', callback_data: 'utvh_kotel_1' }],
     ],
@@ -140,7 +140,7 @@ export const getButtonsByActionUtvh = (action) => {
     utvh_archive_kotel_2: [
       [
         { text: 'Уровень', callback_data: 'utvh_archive_level_kotel_2' },
-        { text: 'Давление', callback_data: 'utvh_archive_par_kotel_2' },
+        { text: 'Давление пара', callback_data: 'utvh_archive_par_kotel_2' },
       ],
       [{ text: 'Назад', callback_data: 'utvh_kotel_2' }],
     ],
@@ -148,7 +148,7 @@ export const getButtonsByActionUtvh = (action) => {
     utvh_archive_kotel_3: [
       [
         { text: 'Уровень', callback_data: 'utvh_archive_level_kotel_3' },
-        { text: 'Давление', callback_data: 'utvh_archive_par_kotel_3' },
+        { text: 'Давление пара', callback_data: 'utvh_archive_par_kotel_3' },
       ],
       [{ text: 'Назад', callback_data: 'utvh_kotel_3' }],
     ],

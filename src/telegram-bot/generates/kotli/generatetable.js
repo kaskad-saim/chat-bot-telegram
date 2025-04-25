@@ -26,15 +26,30 @@ export const generateTableUtvhKotel = (data, kotelNumber, currentTime) => {
   const formatData = (label, key, unit = '', isBoolean = false, section = 'parameters', isAlarm = false) => {
     const sectionData = cleanData[section]; // Получаем раздел
     const value = sectionData ? sectionData[key] : undefined; // Получаем значение, если раздел существует
-    const icon = getStatusIcon(value, isAlarm);
+    let icon = getStatusIcon(value, isAlarm);
 
     if (isBoolean) {
       // Проверяем, является ли значение признаком того, что котел не работает
-      const isKotelNotWorking = value === '—' || value === '0' || value === false || value === 'off' || value === 'false';
-      return `${icon}${label}: ${value !== undefined && value !== '' ? (isKotelNotWorking ? 'Котел не работает' : 'Котел в работе') : 'Нет данных'}`;
+      const isKotelNotWorking =
+        value === '—' || value === '0' || value === false || value === 'off' || value === 'false';
+
+      // Если котел не работает, показываем крестик вместо стандартного значка
+      if (isKotelNotWorking) {
+        icon = '❌ ';
+      }
+
+      return `${icon}${label}: ${
+        value !== undefined && value !== ''
+          ? isKotelNotWorking
+            ? 'Котел не работает'
+            : 'Котел в работе'
+          : 'Нет данных'
+      }`;
     }
 
-    return `${icon}${label}: ${value !== undefined && value !== '' ? value + ' ' + unit : 'Нет данных'}`;
+    return `${icon}${label}: ${
+      value !== undefined && value !== '' ? value + ' ' + unit : 'Нет данных'
+    }`;
   };
 
   // Параметры
@@ -61,7 +76,7 @@ export const generateTableUtvhKotel = (data, kotelNumber, currentTime) => {
 
   // Другие параметры
   const others = [
-    formatData('Задание на уровень', `Задание на уровень`, '%', false, 'others'),
+    formatData('Задание на уровень', `Задание на уровень`, 'мм', false, 'others'),
   ];
 
   // Получение времени записи на сервер
