@@ -142,7 +142,7 @@ export const generateParChartArchiveKotel1 = (userDate) =>
 export const generateParChartArchiveKotel2 = (userDate) =>
   generateParKotelChartArchive(
     Kotel2,
-    'График давления пара Котла №1',
+    'График давления пара Котла №2',
     userDate,
     ['Давление пара на выходе'],
     ['Давление пара']
