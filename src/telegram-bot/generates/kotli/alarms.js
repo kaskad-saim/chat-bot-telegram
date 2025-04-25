@@ -36,7 +36,7 @@ export const checkAlarms = (alarmsData, kotelNumber, currentTime) => {
 
   // Проверяем каждый аварийный сигнал
   alarmKeys.forEach(key => {
-    const fullKey = `${key} котел №${kotelNumber}`; // Формируем полный ключ
+    const fullKey = `${key}`; // Формируем полный ключ
     const alarmValue = alarmsSection[fullKey];
 
     // Если значение прочерк или отсутствует, пропускаем

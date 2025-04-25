@@ -69,7 +69,7 @@ export const generateLevelChart = async (KotelModel, chartTitle, timeRange, kote
     throw new Error('Номер котла (kotelNumber) не указан.');
   }
 
-  const Keys = [`Уровень в барабане котел №${kotelNumber}`]; // Динамически формируем ключ
+  const Keys = [`Уровень в барабане котла`]; // Динамически формируем ключ
   const labels = ['Уровень в барабане котла'];
   const timeRangeInHours = parseInt(timeRange); // Преобразуем "1h", "12h", "24h" в число
 
@@ -92,7 +92,7 @@ export const generatePressureChart = async (KotelModel, chartTitle, timeRange, k
     throw new Error('Номер котла (kotelNumber) не указан.');
   }
 
-  const Keys = [`Давление пара котел №${kotelNumber}`]; // Динамически формируем ключ
+  const Keys = [`Давление пара на выходе`]; // Динамически формируем ключ
   const labels = ['Давление пара'];
   const timeRangeInHours = parseInt(timeRange); // Преобразуем "1h", "12h", "24h" в число
 

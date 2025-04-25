@@ -104,7 +104,7 @@ export const generateLevelChartArchiveKotel1 = (userDate) =>
     Kotel1,
     'График уровня в барабане котла №1',
     userDate,
-    ['Уровень в барабане котел №1'],
+    ['Уровень в барабане котла'],
     ['Уровень в барабане котла']
   );
 
@@ -114,7 +114,7 @@ export const generateLevelChartArchiveKotel2 = (userDate) =>
     Kotel2,
     'График уровня в барабане котла №2',
     userDate,
-    ['Уровень в барабане котел №2'],
+    ['Уровень в барабане котла'],
     ['Уровень в барабане котла']
   );
 
@@ -124,7 +124,7 @@ export const generateLevelChartArchiveKotel3 = (userDate) =>
     Kotel3,
     'График уровня в барабане котла №3',
     userDate,
-    ['Уровень в барабане котел №3'],
+    ['Уровень в барабане котла'],
     ['Уровень в барабане котла']
   );
 
@@ -134,7 +134,7 @@ export const generateParChartArchiveKotel1 = (userDate) =>
     Kotel1,
     'График давления пара Котла №1',
     userDate,
-    ['Давление пара котел №1'],
+    ['Давление пара на выходе'],
     ['Давление пара']
   );
 
@@ -144,7 +144,7 @@ export const generateParChartArchiveKotel2 = (userDate) =>
     Kotel2,
     'График давления пара Котла №1',
     userDate,
-    ['Давление пара котел №2'],
+    ['Давление пара на выходе'],
     ['Давление пара']
   );
 
@@ -154,6 +154,6 @@ generateParKotelChartArchive(
   Kotel3,
   'График давления пара Котла №3',
   userDate,
-  ['Давление пара котел №3'],
+  ['Давление пара на выходе'],
   ['Давление пара']
 );

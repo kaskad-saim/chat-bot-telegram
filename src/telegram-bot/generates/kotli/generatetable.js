@@ -1,6 +1,5 @@
 export const generateTableUtvhKotel = (data, kotelNumber, currentTime) => {
   if (!data) {
-    console.log('Данные отсутствуют (data is null или undefined).');
     return 'Нет данных для отображения.';
   }
 
@@ -40,29 +39,29 @@ export const generateTableUtvhKotel = (data, kotelNumber, currentTime) => {
 
   // Параметры
   const parameters = [
-    formatData('Уровень в барабане', `Уровень в барабане котел №${kotelNumber}`, 'мм', false, 'parameters'),
-    formatData('Разрежение в топке', `Разрежение в топке котел №${kotelNumber}`, 'кгс/м²', false, 'parameters'),
-    formatData('Давление воздуха', `Давление воздуха котел №${kotelNumber}`, 'кгс/м²', false, 'parameters'),
-    formatData('Давление газа', `Давление газа котел №${kotelNumber}`, 'кгс/м²', false, 'parameters'),
-    formatData('Давление пара', `Давление пара котел №${kotelNumber}`, 'кгс/м²', false, 'parameters'),
+    formatData('Уровень в барабане', `Уровень в барабане котла`, 'мм', false, 'parameters'),
+    formatData('Разрежение в топке', `Разрежение в топке котла`, 'кгс/м²', false, 'parameters'),
+    formatData('Давление воздуха', `Давление воздуха перед горелкой`, 'кгс/м²', false, 'parameters'),
+    formatData('Давление газа', `Давление газа перед горелкой`, 'кгс/м²', false, 'parameters'),
+    formatData('Давление пара', `Давление пара на выходе`, 'кгс/м²', false, 'parameters'),
   ];
 
   // Информация
   const info = [
-    formatData('Режим', `Рабочий режим котел №${kotelNumber}`, '', true, 'info'),
+    formatData('Режим', `Рабочий режим`, '', true, 'info'),
   ];
 
   // ИМ (исполнительные механизмы)
   const im = [
-    formatData('ИМ уровня', `ИМ уровня котел №${kotelNumber}`, '%', false, 'im'),
-    formatData('ИМ разрежения', `ИМ разрежения котел №${kotelNumber}`, '%', false, 'im'),
-    formatData('ИМ воздуха', `ИМ воздуха котел №${kotelNumber}`, '%', false, 'im'),
-    formatData('ИМ газа', `ИМ газа котел №${kotelNumber}`, '%', false, 'im'),
+    formatData('ИМ уровня', `ИМ уровня`, '%', false, 'im'),
+    formatData('ИМ разрежения', `ИМ разрежения`, '%', false, 'im'),
+    formatData('ИМ воздуха', `ИМ воздуха`, '%', false, 'im'),
+    formatData('ИМ газа', `ИМ газа`, '%', false, 'im'),
   ];
 
   // Другие параметры
   const others = [
-    formatData('Задание на уровень', `Задание на уровень котел №${kotelNumber}`, '%', false, 'others'),
+    formatData('Задание на уровень', `Задание на уровень`, '%', false, 'others'),
   ];
 
   // Получение времени записи на сервер

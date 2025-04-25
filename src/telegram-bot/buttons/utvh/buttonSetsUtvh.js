@@ -5,9 +5,9 @@ export const getButtonsByActionUtvh = (action) => {
         { text: 'Котел №1', callback_data: 'utvh_kotel_1' },
         { text: 'Котел №2', callback_data: 'utvh_kotel_2' }
       ],
-      [
-        { text: 'Котел №3', callback_data: 'utvh_kotel_3' },
-      ],
+      // [
+      //   { text: 'Котел №3', callback_data: 'utvh_kotel_3' },
+      // ],
       // [
       //   { text: 'ХВО', callback_data: 'utvh_kotel_3' },
       // ],
@@ -18,12 +18,12 @@ export const getButtonsByActionUtvh = (action) => {
     utvh_kotel_1: [
       [
         { text: 'Текущие параметры', callback_data: 'utvh_kotel_1_params' },
-        { text: 'Графики', callback_data: 'utvh_kotel_1_charts' },
+        // { text: 'Графики', callback_data: 'utvh_kotel_1_charts' },
       ],
-      [
-        { text: 'Архив графиков', callback_data: 'utvh_archive_kotel_1' },
-        { text: 'Сигнализации', callback_data: 'utvh_kotel_1_alarms' },
-      ],
+      // [
+      //   { text: 'Архив графиков', callback_data: 'utvh_archive_kotel_1' },
+      //   { text: 'Сигнализации', callback_data: 'utvh_kotel_1_alarms' },
+      // ],
       [{ text: 'Назад', callback_data: 'production_utvh' }],
     ],
     utvh_kotel_2: [
